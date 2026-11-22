@@ -46,6 +46,11 @@ class Employee extends Model
         return $this->hasMany(Appointment::class, 'doctor_id');
     }
 
+    public function consultations(): HasMany
+    {
+        return $this->hasMany(Consultation::class, 'doctor_id')->orderByDesc('started_at')->orderByDesc('id');
+    }
+
     public function prescriptions(): HasMany
     {
         return $this->hasMany(Prescription::class, 'prescribed_by');

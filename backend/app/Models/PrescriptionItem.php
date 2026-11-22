@@ -8,7 +8,26 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PrescriptionItem extends Model
 {
-    protected $fillable = ['prescription_id', 'medicine_id', 'dosage', 'frequency', 'duration_days', 'quantity', 'quantity_unit', 'instructions'];
+    protected $fillable = [
+        'prescription_id',
+        'medicine_id',
+        'medicine_name',
+        'dosage',
+        'frequency',
+        'duration',
+        'duration_days',
+        'quantity',
+        'quantity_unit',
+        'instructions',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'duration_days' => 'integer',
+            'quantity' => 'float',
+        ];
+    }
 
     public function prescription(): BelongsTo
     {

@@ -38,6 +38,11 @@ class Patient extends Model
         return $this->hasMany(Appointment::class);
     }
 
+    public function consultations(): HasMany
+    {
+        return $this->hasMany(Consultation::class)->orderByDesc('started_at')->orderByDesc('id');
+    }
+
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);

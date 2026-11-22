@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ConsultationController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\PatientController;
@@ -95,5 +96,28 @@ Route::middleware(['auth:sanctum', 'active'])->prefix('appointments')->group(fun
         Route::patch('/{appointment}/cancel', [AppointmentController::class, 'cancel'])->whereNumber('appointment');
         Route::post('/doctor-schedules', [AppointmentController::class, 'storeDoctorSchedule']);
         Route::delete('/doctor-schedules/{schedule}', [AppointmentController::class, 'destroyDoctorSchedule'])->whereNumber('schedule');
+    });
+});
+
+Route::middleware(['auth:sanctum', 'active'])->prefix('consultations')->group(function (): void {
+    Route::middleware('permission:clinical.view')->group(function (): void {
+        Route::get('/', [ConsultationController::class, 'index']);
+        Route::get('/options', [ConsultationController::class, 'options']);
+        Route::get('/patients/{patient}/history', [ConsultationController::class, 'patientHistory'])->whereNumber('patient');
+        Route::get('/{consultation}', [ConsultationController::class, 'show'])->whereNumber('consultation');
+        Route::get('/{consultation}/audit-logs', [ConsultationController::class, 'auditLogs'])->whereNumber('consultation');
+    });
+
+    Route::middleware('permission:clinical.manage')->group(function (): void {
+        Route::post('/', [ConsultationController::class, 'store']);
+        Route::put('/{consultation}', [ConsultationController::class, 'update'])->whereNumber('consultation');
+        Route::patch('/{consultation}', [ConsultationController::class, 'update'])->whereNumber('consultation');
+        Route::post('/{consultation}/vital-signs', [ConsultationController::class, 'storeVitalSigns'])->whereNumber('consultation');
+    });
+
+    Route::middleware('permission:clinical.diagnose')->group(function (): void {
+        Route::post('/{consultation}/prescriptions', [ConsultationController::class, 'storePrescription'])->whereNumber('consultation');
+        Route::patch('/{consultation}/prescriptions/{prescription}/status', [ConsultationController::class, 'updatePrescriptionStatus'])->whereNumber('consultation')->whereNumber('prescription');
+        Route::post('/{consultation}/complete', [ConsultationController::class, 'complete'])->whereNumber('consultation');
     });
 });
