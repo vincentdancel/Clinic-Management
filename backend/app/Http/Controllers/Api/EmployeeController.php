@@ -66,7 +66,7 @@ class EmployeeController extends Controller
             $data = $request->validated();
             $employee = Employee::create([
                 ...collect($data)->except(['specialization_ids', 'primary_specialization_id', 'create_account', 'account_email', 'password', 'password_confirmation', 'role_id'])->all(),
-                'employee_number' => 'TEMP-'.Str::uuid(),
+                'employee_number' => 'T-'.Str::random(16),
             ]);
             $employee->update(['employee_number' => sprintf('EMP-%s-%06d', now()->format('Y'), $employee->id)]);
             $this->syncSpecializations($employee, $data);

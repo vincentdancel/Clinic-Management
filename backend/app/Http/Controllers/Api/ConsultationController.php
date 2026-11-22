@@ -20,6 +20,7 @@ use App\Models\Medicine;
 use App\Models\Patient;
 use App\Models\Prescription;
 use App\Services\AuditLogService;
+use App\Services\InventoryService;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -31,8 +32,10 @@ use Illuminate\Validation\ValidationException;
 
 class ConsultationController extends Controller
 {
-    public function __construct(private readonly AuditLogService $auditLogs)
-    {
+    public function __construct(
+        private readonly AuditLogService $auditLogs,
+        private readonly InventoryService $inventory,
+    ) {
     }
 
     public function index(ConsultationIndexRequest $request): mixed
@@ -194,7 +197,7 @@ class ConsultationController extends Controller
             $startedAt = isset($validated['started_at']) ? CarbonImmutable::parse($validated['started_at']) : now();
 
             $consultation = Consultation::create([
-                'consultation_number' => 'TEMP-'.Str::uuid(),
+                'consultation_number' => 'T-'.Str::random(16),
                 'patient_id' => $patientId,
                 'doctor_id' => $doctorId,
                 'recorded_by' => $request->user()->id,
@@ -418,18 +421,38 @@ class ConsultationController extends Controller
         ]);
 
         $oldStatus = $rx->status;
-        $rx->update(['status' => $validated['status']]);
+        $newStatus = $validated['status'];
 
-        $this->auditLogs->log(
-            event: 'prescription.updated',
-            auditable: $record,
-            user: $request->user(),
-            oldValues: ['prescription_id' => $rx->id, 'status' => $oldStatus],
-            newValues: ['prescription_id' => $rx->id, 'status' => $validated['status']],
-            request: $request,
-        );
+        if ($oldStatus === 'dispensed' && $newStatus !== 'dispensed') {
+            throw ValidationException::withMessages([
+                'status' => ['A dispensed prescription cannot be reverted or cancelled.'],
+            ]);
+        }
 
-        return new PrescriptionResource($rx->load(['prescriber', 'items.medicine']));
+        if ($oldStatus === 'cancelled' && $newStatus === 'dispensed') {
+            throw ValidationException::withMessages([
+                'status' => ['A cancelled prescription cannot be dispensed.'],
+            ]);
+        }
+
+        DB::transaction(function () use ($rx, $record, $oldStatus, $newStatus, $request): void {
+            if ($newStatus === 'dispensed' && $oldStatus !== 'dispensed') {
+                $this->inventory->deductForPrescription($rx, $request->user(), $request);
+            }
+
+            $rx->update(['status' => $newStatus]);
+
+            $this->auditLogs->log(
+                event: 'prescription.updated',
+                auditable: $record,
+                user: $request->user(),
+                oldValues: ['prescription_id' => $rx->id, 'status' => $oldStatus],
+                newValues: ['prescription_id' => $rx->id, 'status' => $newStatus],
+                request: $request,
+            );
+        });
+
+        return new PrescriptionResource($rx->fresh(['prescriber', 'items.medicine']));
     }
 
     public function patientHistory(string $patient): JsonResponse

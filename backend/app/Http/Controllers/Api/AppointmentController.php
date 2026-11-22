@@ -162,7 +162,7 @@ class AppointmentController extends Controller
             $status = $data['status'] ?? Appointment::STATUS_PENDING;
 
             $appointment = Appointment::create([
-                'appointment_number' => 'TEMP-'.Str::uuid(),
+                'appointment_number' => 'T-'.Str::random(16),
                 'patient_id' => $patient->id,
                 'doctor_id' => $doctor->id,
                 'doctor_schedule_id' => $scheduleId,

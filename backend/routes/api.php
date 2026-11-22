@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ConsultationController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmployeeController;
+use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\Api\PaymentController;
@@ -149,6 +150,24 @@ Route::middleware(['auth:sanctum', 'active'])->prefix('payments')->group(functio
     Route::middleware('permission:billing.manage')->group(function (): void {
         Route::post('/', [PaymentController::class, 'store']);
     });
+});
+
+Route::middleware(['auth:sanctum', 'active', 'permission:inventory.manage'])->prefix('inventory')->group(function (): void {
+    Route::get('/options', [InventoryController::class, 'options']);
+    Route::get('/categories', [InventoryController::class, 'categoriesIndex']);
+    Route::post('/categories', [InventoryController::class, 'storeCategory']);
+    Route::put('/categories/{category}', [InventoryController::class, 'updateCategory'])->whereNumber('category');
+    Route::patch('/categories/{category}', [InventoryController::class, 'updateCategory'])->whereNumber('category');
+    Route::delete('/categories/{category}', [InventoryController::class, 'destroyCategory'])->whereNumber('category');
+    Route::get('/medicines', [InventoryController::class, 'index']);
+    Route::post('/medicines', [InventoryController::class, 'store']);
+    Route::get('/medicines/{medicine}', [InventoryController::class, 'show'])->whereNumber('medicine');
+    Route::put('/medicines/{medicine}', [InventoryController::class, 'update'])->whereNumber('medicine');
+    Route::patch('/medicines/{medicine}', [InventoryController::class, 'update'])->whereNumber('medicine');
+    Route::delete('/medicines/{medicine}', [InventoryController::class, 'destroy'])->whereNumber('medicine');
+    Route::post('/medicines/{medicine}/receive', [InventoryController::class, 'receive'])->whereNumber('medicine');
+    Route::post('/medicines/{medicine}/adjust', [InventoryController::class, 'adjust'])->whereNumber('medicine');
+    Route::get('/transactions', [InventoryController::class, 'transactions']);
 });
 
 Route::middleware(['auth:sanctum', 'active', 'permission:reports.view'])->prefix('reports')->group(function (): void {

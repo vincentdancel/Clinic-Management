@@ -60,7 +60,7 @@ class PatientController extends Controller
         $patient = DB::transaction(function () use ($request): Patient {
             $patient = Patient::create([
                 ...$request->validated(),
-                'patient_number' => 'TEMP-'.Str::uuid(),
+                'patient_number' => 'T-'.Str::random(16),
             ]);
             $patient->update(['patient_number' => sprintf('PAT-%s-%06d', now()->format('Y'), $patient->id)]);
 
