@@ -12,7 +12,7 @@ class PatientMedicalHistoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,10 @@ class PatientMedicalHistoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'condition_name' => ['required', 'string', 'max:160'],
+            'details' => ['nullable', 'string', 'max:5000'],
+            'diagnosed_at' => ['nullable', 'date', 'before_or_equal:today'],
+            'resolved_at' => ['nullable', 'date', 'after_or_equal:diagnosed_at', 'before_or_equal:today'],
         ];
     }
 }

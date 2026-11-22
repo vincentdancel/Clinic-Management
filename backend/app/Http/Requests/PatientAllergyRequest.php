@@ -12,7 +12,7 @@ class PatientAllergyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,10 @@ class PatientAllergyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'allergen' => ['required', 'string', 'max:160'],
+            'reaction' => ['nullable', 'string', 'max:255'],
+            'severity' => ['nullable', 'string', 'max:30'],
+            'notes' => ['nullable', 'string', 'max:2000'],
         ];
     }
 }

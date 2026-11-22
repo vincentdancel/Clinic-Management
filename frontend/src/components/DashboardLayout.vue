@@ -13,7 +13,7 @@ const rail = ref(false)
 
 const navigation = [
   { title: 'Dashboard', icon: 'mdi-view-dashboard-outline', to: '/' },
-  { title: 'Patient Management', icon: 'mdi-account-heart-outline', to: '/patients' },
+  { title: 'Patient Management', icon: 'mdi-account-heart-outline', to: '/patients', permission: 'patients.view' },
   { title: 'Appointment Management', icon: 'mdi-calendar-clock-outline', to: '/appointments' },
   { title: 'Employee Management', icon: 'mdi-account-group-outline', to: '/employees' },
   { title: 'Consultation & Medical Records', icon: 'mdi-file-document-edit-outline', to: '/consultations' },
