@@ -19,12 +19,12 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $rolePermissions = [
-            'administrator' => ['users.manage', 'roles.manage', 'permissions.manage', 'patients.view', 'patients.manage', 'employees.view', 'employees.manage', 'appointments.view', 'appointments.manage', 'clinical.view', 'clinical.manage', 'clinical.diagnose', 'billing.view', 'billing.manage', 'inventory.manage'],
-            'doctor' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage', 'clinical.view', 'clinical.manage', 'clinical.diagnose'],
-            'nurse' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage', 'clinical.view', 'clinical.manage'],
-            'receptionist' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage', 'billing.view'],
-            'cashier' => ['patients.view', 'employees.view', 'billing.view', 'billing.manage'],
-            'inventory-staff' => ['employees.view', 'inventory.manage'],
+            'administrator' => ['users.manage', 'roles.manage', 'permissions.manage', 'patients.view', 'patients.manage', 'employees.view', 'employees.manage', 'appointments.view', 'appointments.manage', 'clinical.view', 'clinical.manage', 'clinical.diagnose', 'billing.view', 'billing.manage', 'inventory.manage', 'reports.view', 'reports.export'],
+            'doctor' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage', 'clinical.view', 'clinical.manage', 'clinical.diagnose', 'reports.view'],
+            'nurse' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage', 'clinical.view', 'clinical.manage', 'reports.view'],
+            'receptionist' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage', 'billing.view', 'reports.view'],
+            'cashier' => ['patients.view', 'employees.view', 'billing.view', 'billing.manage', 'reports.view', 'reports.export'],
+            'inventory-staff' => ['employees.view', 'inventory.manage', 'reports.view', 'reports.export'],
         ];
         $roles = [];
 

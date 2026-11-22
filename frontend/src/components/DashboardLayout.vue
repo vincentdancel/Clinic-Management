@@ -19,7 +19,7 @@ const navigation = [
   { title: 'Consultation & Medical Records', icon: 'mdi-file-document-edit-outline', to: '/consultations', permission: 'clinical.view' },
   { title: 'Billing & Payments', icon: 'mdi-credit-card-outline', to: '/billing', permission: 'billing.view' },
   { title: 'Medicine & Inventory', icon: 'mdi-pill', to: '/inventory' },
-  { title: 'Reports & Analytics', icon: 'mdi-chart-box-outline', to: '/reports' },
+  { title: 'Reports & Analytics', icon: 'mdi-chart-box-outline', to: '/reports', permission: 'reports.view' },
   { title: 'User Management', icon: 'mdi-account-cog-outline', to: '/admin', permission: 'users.manage', role: 'administrator' },
   { title: 'Settings', icon: 'mdi-cog-outline', to: '/settings' },
 ]

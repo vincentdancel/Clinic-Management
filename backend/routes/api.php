@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserManagementController;
 use Illuminate\Support\Facades\Route;
@@ -148,4 +149,10 @@ Route::middleware(['auth:sanctum', 'active'])->prefix('payments')->group(functio
     Route::middleware('permission:billing.manage')->group(function (): void {
         Route::post('/', [PaymentController::class, 'store']);
     });
+});
+
+Route::middleware(['auth:sanctum', 'active', 'permission:reports.view'])->prefix('reports')->group(function (): void {
+    Route::get('/options', [ReportController::class, 'options']);
+    Route::get('/{type}/export', [ReportController::class, 'export']);
+    Route::get('/{type}', [ReportController::class, 'show']);
 });
