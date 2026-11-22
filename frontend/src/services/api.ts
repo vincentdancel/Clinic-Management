@@ -9,9 +9,12 @@ export const api = axios.create({
   },
 })
 
+export function getApiRoot(): string {
+  return api.defaults.baseURL?.replace(/\/api\/?$/, '') ?? ''
+}
+
 export async function prepareCsrfCookie(): Promise<void> {
-  const apiRoot = api.defaults.baseURL?.replace(/\/api\/?$/, '') ?? ''
-  await axios.get(`${apiRoot}/sanctum/csrf-cookie`, { withCredentials: true })
+  await axios.get(`${getApiRoot()}/sanctum/csrf-cookie`, { withCredentials: true })
 }
 
 export function getApiErrorMessage(error: unknown, fallback = 'An unexpected error occurred.'): string {
