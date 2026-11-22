@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
@@ -55,5 +56,20 @@ Route::middleware(['auth:sanctum', 'active'])->prefix('patients')->group(functio
         Route::post('/{patient}/medical-history', [PatientController::class, 'storeMedicalHistory'])->whereNumber('patient');
         Route::put('/{patient}/medical-history/{history}', [PatientController::class, 'updateMedicalHistory'])->whereNumber('patient')->whereNumber('history');
         Route::delete('/{patient}/medical-history/{history}', [PatientController::class, 'destroyMedicalHistory'])->whereNumber('patient')->whereNumber('history');
+    });
+});
+
+Route::middleware(['auth:sanctum', 'active'])->prefix('employees')->group(function (): void {
+    Route::middleware('permission:employees.view')->group(function (): void {
+        Route::get('/', [EmployeeController::class, 'index']);
+        Route::get('/options', [EmployeeController::class, 'options']);
+        Route::get('/{employee}', [EmployeeController::class, 'show'])->whereNumber('employee');
+    });
+
+    Route::middleware('permission:employees.manage')->group(function (): void {
+        Route::post('/', [EmployeeController::class, 'store']);
+        Route::put('/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee');
+        Route::patch('/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee');
+        Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->whereNumber('employee');
     });
 });

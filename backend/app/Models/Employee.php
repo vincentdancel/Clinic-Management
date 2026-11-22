@@ -12,7 +12,7 @@ class Employee extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'department_id', 'employee_number', 'first_name', 'last_name', 'gender', 'date_of_birth', 'phone', 'email', 'job_title', 'hire_date', 'employment_status', 'address'];
+    protected $fillable = ['user_id', 'department_id', 'employee_number', 'first_name', 'last_name', 'gender', 'date_of_birth', 'phone', 'email', 'employee_category', 'job_title', 'hire_date', 'employment_status', 'address'];
 
     protected function casts(): array
     {
