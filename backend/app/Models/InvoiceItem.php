@@ -7,11 +7,34 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InvoiceItem extends Model
 {
-    protected $fillable = ['invoice_id', 'service_id', 'prescription_item_id', 'description', 'quantity', 'unit_price'];
+    public const TYPE_CONSULTATION = 'consultation';
+    public const TYPE_SERVICE = 'service';
+    public const TYPE_OTHER = 'other';
+
+    public const TYPES = [
+        self::TYPE_CONSULTATION,
+        self::TYPE_SERVICE,
+        self::TYPE_OTHER,
+    ];
+
+    protected $fillable = [
+        'invoice_id',
+        'service_id',
+        'prescription_item_id',
+        'item_type',
+        'description',
+        'quantity',
+        'unit_price',
+        'line_total',
+    ];
 
     protected function casts(): array
     {
-        return ['quantity' => 'decimal:3', 'unit_price' => 'decimal:2'];
+        return [
+            'quantity' => 'decimal:3',
+            'unit_price' => 'decimal:2',
+            'line_total' => 'decimal:2',
+        ];
     }
 
     public function invoice(): BelongsTo

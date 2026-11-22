@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Service;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,11 +19,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $rolePermissions = [
-            'administrator' => ['users.manage', 'roles.manage', 'permissions.manage', 'patients.view', 'patients.manage', 'employees.view', 'employees.manage', 'appointments.view', 'appointments.manage', 'clinical.view', 'clinical.manage', 'clinical.diagnose', 'billing.manage', 'inventory.manage'],
+            'administrator' => ['users.manage', 'roles.manage', 'permissions.manage', 'patients.view', 'patients.manage', 'employees.view', 'employees.manage', 'appointments.view', 'appointments.manage', 'clinical.view', 'clinical.manage', 'clinical.diagnose', 'billing.view', 'billing.manage', 'inventory.manage'],
             'doctor' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage', 'clinical.view', 'clinical.manage', 'clinical.diagnose'],
             'nurse' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage', 'clinical.view', 'clinical.manage'],
-            'receptionist' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage'],
-            'cashier' => ['patients.view', 'employees.view', 'billing.manage'],
+            'receptionist' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage', 'billing.view'],
+            'cashier' => ['patients.view', 'employees.view', 'billing.view', 'billing.manage'],
             'inventory-staff' => ['employees.view', 'inventory.manage'],
         ];
         $roles = [];
@@ -40,6 +41,19 @@ class DatabaseSeeder extends Seeder
 
         foreach ($rolePermissions as $roleSlug => $permissionSlugs) {
             $roles[$roleSlug]->permissions()->sync(collect($permissionSlugs)->map(fn (string $slug): int => $permissions[$slug]->id)->all());
+        }
+
+        $defaultServices = [
+            ['code' => 'SRV-LAB-CBC', 'name' => 'Complete Blood Count (CBC)', 'description' => 'Standard hematology blood panel.', 'price' => 450.00, 'duration_minutes' => 15],
+            ['code' => 'SRV-LAB-UA', 'name' => 'Urinalysis', 'description' => 'Routine urine examination.', 'price' => 250.00, 'duration_minutes' => 15],
+            ['code' => 'SRV-DIAG-ECG', 'name' => 'Electrocardiogram (ECG)', 'description' => '12-lead resting ECG.', 'price' => 650.00, 'duration_minutes' => 20],
+            ['code' => 'SRV-IMG-XRAY', 'name' => 'Chest X-Ray', 'description' => 'Standard PA chest radiograph.', 'price' => 850.00, 'duration_minutes' => 20],
+            ['code' => 'SRV-PROC-DRESS', 'name' => 'Wound Dressing & Care', 'description' => 'Sterile wound cleaning and dressing.', 'price' => 350.00, 'duration_minutes' => 20],
+            ['code' => 'SRV-PROC-NEB', 'name' => 'Nebulization Therapy', 'description' => 'Single-session respiratory nebulization.', 'price' => 300.00, 'duration_minutes' => 15],
+        ];
+
+        foreach ($defaultServices as $service) {
+            Service::firstOrCreate(['code' => $service['code']], [...$service, 'is_active' => true]);
         }
 
         $adminEmail = env('CLINIC_ADMIN_EMAIL');

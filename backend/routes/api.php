@@ -5,7 +5,9 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ConsultationController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmployeeController;
+use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\PatientController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserManagementController;
@@ -119,5 +121,31 @@ Route::middleware(['auth:sanctum', 'active'])->prefix('consultations')->group(fu
         Route::post('/{consultation}/prescriptions', [ConsultationController::class, 'storePrescription'])->whereNumber('consultation');
         Route::patch('/{consultation}/prescriptions/{prescription}/status', [ConsultationController::class, 'updatePrescriptionStatus'])->whereNumber('consultation')->whereNumber('prescription');
         Route::post('/{consultation}/complete', [ConsultationController::class, 'complete'])->whereNumber('consultation');
+    });
+});
+
+Route::middleware(['auth:sanctum', 'active'])->prefix('invoices')->group(function (): void {
+    Route::middleware('permission:billing.view')->group(function (): void {
+        Route::get('/', [InvoiceController::class, 'index']);
+        Route::get('/options', [InvoiceController::class, 'options']);
+        Route::get('/{invoice}', [InvoiceController::class, 'show'])->whereNumber('invoice');
+    });
+
+    Route::middleware('permission:billing.manage')->group(function (): void {
+        Route::post('/', [InvoiceController::class, 'store']);
+        Route::put('/{invoice}', [InvoiceController::class, 'update'])->whereNumber('invoice');
+        Route::patch('/{invoice}', [InvoiceController::class, 'update'])->whereNumber('invoice');
+        Route::post('/{invoice}/cancel', [InvoiceController::class, 'cancel'])->whereNumber('invoice');
+    });
+});
+
+Route::middleware(['auth:sanctum', 'active'])->prefix('payments')->group(function (): void {
+    Route::middleware('permission:billing.view')->group(function (): void {
+        Route::get('/', [PaymentController::class, 'index']);
+        Route::get('/{payment}', [PaymentController::class, 'show'])->whereNumber('payment');
+    });
+
+    Route::middleware('permission:billing.manage')->group(function (): void {
+        Route::post('/', [PaymentController::class, 'store']);
     });
 });

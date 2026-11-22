@@ -17,7 +17,7 @@ const navigation = [
   { title: 'Appointment Management', icon: 'mdi-calendar-clock-outline', to: '/appointments', permission: 'appointments.view' },
   { title: 'Employee Management', icon: 'mdi-account-group-outline', to: '/employees', permission: 'employees.view' },
   { title: 'Consultation & Medical Records', icon: 'mdi-file-document-edit-outline', to: '/consultations', permission: 'clinical.view' },
-  { title: 'Billing & Payments', icon: 'mdi-credit-card-outline', to: '/billing' },
+  { title: 'Billing & Payments', icon: 'mdi-credit-card-outline', to: '/billing', permission: 'billing.view' },
   { title: 'Medicine & Inventory', icon: 'mdi-pill', to: '/inventory' },
   { title: 'Reports & Analytics', icon: 'mdi-chart-box-outline', to: '/reports' },
   { title: 'User Management', icon: 'mdi-account-cog-outline', to: '/admin', permission: 'users.manage', role: 'administrator' },
