@@ -14,7 +14,7 @@ const rail = ref(false)
 const navigation = [
   { title: 'Dashboard', icon: 'mdi-view-dashboard-outline', to: '/' },
   { title: 'Patient Management', icon: 'mdi-account-heart-outline', to: '/patients', permission: 'patients.view' },
-  { title: 'Appointment Management', icon: 'mdi-calendar-clock-outline', to: '/appointments' },
+  { title: 'Appointment Management', icon: 'mdi-calendar-clock-outline', to: '/appointments', permission: 'appointments.view' },
   { title: 'Employee Management', icon: 'mdi-account-group-outline', to: '/employees', permission: 'employees.view' },
   { title: 'Consultation & Medical Records', icon: 'mdi-file-document-edit-outline', to: '/consultations' },
   { title: 'Billing & Payments', icon: 'mdi-credit-card-outline', to: '/billing' },

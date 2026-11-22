@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmployeeController;
@@ -71,5 +72,28 @@ Route::middleware(['auth:sanctum', 'active'])->prefix('employees')->group(functi
         Route::put('/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee');
         Route::patch('/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee');
         Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->whereNumber('employee');
+    });
+});
+
+Route::middleware(['auth:sanctum', 'active'])->prefix('appointments')->group(function (): void {
+    Route::middleware('permission:appointments.view')->group(function (): void {
+        Route::get('/', [AppointmentController::class, 'index']);
+        Route::get('/options', [AppointmentController::class, 'options']);
+        Route::get('/available-slots', [AppointmentController::class, 'availableSlots']);
+        Route::get('/doctor-schedules', [AppointmentController::class, 'doctorSchedules']);
+        Route::get('/{appointment}', [AppointmentController::class, 'show'])->whereNumber('appointment');
+        Route::get('/{appointment}/history', [AppointmentController::class, 'history'])->whereNumber('appointment');
+    });
+
+    Route::middleware('permission:appointments.manage')->group(function (): void {
+        Route::post('/', [AppointmentController::class, 'store']);
+        Route::put('/{appointment}', [AppointmentController::class, 'update'])->whereNumber('appointment');
+        Route::patch('/{appointment}', [AppointmentController::class, 'update'])->whereNumber('appointment');
+        Route::patch('/{appointment}/reschedule', [AppointmentController::class, 'reschedule'])->whereNumber('appointment');
+        Route::patch('/{appointment}/status', [AppointmentController::class, 'updateStatus'])->whereNumber('appointment');
+        Route::post('/{appointment}/cancel', [AppointmentController::class, 'cancel'])->whereNumber('appointment');
+        Route::patch('/{appointment}/cancel', [AppointmentController::class, 'cancel'])->whereNumber('appointment');
+        Route::post('/doctor-schedules', [AppointmentController::class, 'storeDoctorSchedule']);
+        Route::delete('/doctor-schedules/{schedule}', [AppointmentController::class, 'destroyDoctorSchedule'])->whereNumber('schedule');
     });
 });

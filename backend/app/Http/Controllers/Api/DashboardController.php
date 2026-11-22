@@ -39,7 +39,7 @@ class DashboardController extends Controller
             ];
         });
 
-        $appointmentStatuses = ['scheduled', 'confirmed', 'checked_in', 'completed', 'cancelled', 'no_show'];
+        $appointmentStatuses = ['pending', 'confirmed', 'completed', 'cancelled', 'no_show'];
         $appointmentCounts = Appointment::query()
             ->whereBetween('scheduled_at', [$today->startOfDay(), $today->endOfDay()])
             ->select('status', DB::raw('COUNT(*) as total'))

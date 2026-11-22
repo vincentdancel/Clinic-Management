@@ -18,10 +18,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $rolePermissions = [
-            'administrator' => ['users.manage', 'roles.manage', 'permissions.manage', 'patients.view', 'patients.manage', 'employees.view', 'employees.manage', 'appointments.manage', 'clinical.manage', 'billing.manage', 'inventory.manage'],
-            'doctor' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.manage', 'clinical.manage'],
-            'nurse' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.manage', 'clinical.manage'],
-            'receptionist' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.manage'],
+            'administrator' => ['users.manage', 'roles.manage', 'permissions.manage', 'patients.view', 'patients.manage', 'employees.view', 'employees.manage', 'appointments.view', 'appointments.manage', 'clinical.manage', 'billing.manage', 'inventory.manage'],
+            'doctor' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage', 'clinical.manage'],
+            'nurse' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage', 'clinical.manage'],
+            'receptionist' => ['patients.view', 'patients.manage', 'employees.view', 'appointments.view', 'appointments.manage'],
             'cashier' => ['patients.view', 'employees.view', 'billing.manage'],
             'inventory-staff' => ['employees.view', 'inventory.manage'],
         ];
