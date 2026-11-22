@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useDisplay } from 'vuetify'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 
@@ -8,8 +9,17 @@ const auth = useAuthStore()
 const notices = useNotificationsStore()
 const route = useRoute()
 const router = useRouter()
+const display = useDisplay()
 const drawerOpen = ref(false)
 const rail = ref(false)
+const isDrawerVisible = computed({
+  get: () => !display.smAndDown.value || drawerOpen.value,
+  set: (value: boolean) => {
+    if (display.smAndDown.value) {
+      drawerOpen.value = value
+    }
+  },
+})
 
 const navigation = [
   { title: 'Dashboard', icon: 'mdi-view-dashboard-outline', to: '/' },
@@ -39,10 +49,10 @@ async function logout() {
 
 <template>
   <v-navigation-drawer
-    v-model="drawerOpen"
+    v-model="isDrawerVisible"
     :rail="rail"
-    :temporary="$vuetify.display.smAndDown"
-    :permanent="!$vuetify.display.smAndDown"
+    :temporary="display.smAndDown.value"
+    :permanent="!display.smAndDown.value"
     width="264"
     rail-width="76"
     class="clinic-sidebar"
