@@ -1,0 +1,34 @@
+@import './base.css';
+
+:root {
+  font-family: Inter, 'Segoe UI', Roboto, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #203a3a;
+  background: #f4f8f7;
+}
+
+* { box-sizing: border-box; }
+html, body, #app { min-width: 320px; min-height: 100%; margin: 0; }
+body { min-height: 100vh; }
+a { color: inherit; }
+
+.auth-page { background: radial-gradient(ellipse at 12% 8%, #e0f0eb 0, transparent 38%), #f4f8f7; }
+.auth-brand { display: inline-flex; align-items: center; gap: 11px; color: #234344; font-size: 14px; font-weight: 700; letter-spacing: .13em; }
+.auth-brand b { color: #167d78; }
+.brand-mark { display: inline-grid; place-items: center; width: 39px; height: 39px; border-radius: 13px; color: white; background: #167d78; font-family: Georgia, serif; font-size: 24px; font-weight: 700; letter-spacing: 0; }
+.auth-card, .feature-card { border: 1px solid #e6eeeb; background: rgba(255, 255, 255, .94) !important; box-shadow: 0 18px 55px rgba(27, 74, 70, .06) !important; }
+.eyebrow { color: #168079; font-size: 11px; font-weight: 700; letter-spacing: .16em; }
+.auth-foot { color: #829391; font-size: 12px; }
+.app-shell { min-height: 100vh; background: #f4f8f7; }
+.topbar { display: flex; align-items: center; justify-content: space-between; min-height: 76px; padding: 12px max(28px, calc((100vw - 1160px) / 2)); border-bottom: 1px solid #e6eeeb; background: rgba(255, 255, 255, .9); }
+.workspace { width: min(1120px, calc(100% - 48px)); margin: 0 auto; padding: 62px 0 80px; }
+.workspace.narrow { width: min(720px, calc(100% - 48px)); }
+
+@media (max-width: 640px) {
+  .topbar { padding: 12px 16px; }
+  .workspace { width: calc(100% - 32px); padding-top: 38px; }
+  .topbar .v-btn { min-width: 0; padding-inline: 8px; }
+}
