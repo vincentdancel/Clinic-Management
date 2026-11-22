@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserManagementController;
@@ -35,3 +36,4 @@ Route::middleware(['auth:sanctum', 'active'])->prefix('admin')->group(function (
 });
 
 Route::middleware(['auth:sanctum', 'active'])->get('/user', [AuthController::class, 'me']);
+Route::middleware(['auth:sanctum', 'active'])->get('/dashboard', DashboardController::class);
