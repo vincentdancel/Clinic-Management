@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 
@@ -34,8 +34,8 @@ async function loadData() {
     users.value = userResponse.data.users.data
     roles.value = roleResponse.data.roles
     permissions.value = permissionResponse.data.permissions
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load access management data.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load access management data.'), 'error')
   } finally {
     busy.value = false
   }
@@ -57,8 +57,8 @@ async function createUser() {
     newUser.value = { name: '', email: '', password: '', password_confirmation: '', role_id: null }
     notifications.show('User account saved.', 'success')
     await loadData()
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not create the account. Check all fields.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not create the account. Check all fields.'), 'error')
   }
 }
 
@@ -79,8 +79,8 @@ async function toggleUser(user: ManagedUser) {
     const { data } = await api.patch(`/admin/users/${user.id}/active`, { is_active: !user.is_active })
     user.is_active = data.user.is_active
     notifications.show(data.message, 'success')
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not change this account status.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not change this account status.'), 'error')
   }
 }
 
@@ -96,8 +96,8 @@ async function createRole() {
     newRole.value = { name: '', slug: '', description: '', permission_ids: [] }
     notifications.show('Role saved.', 'success')
     await loadData()
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not create the role.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not create the role.'), 'error')
   }
 }
 
@@ -117,8 +117,8 @@ async function removeRole(role: Role) {
     await api.delete(`/admin/roles/${role.id}`)
     notifications.show('Role deleted.', 'success')
     await loadData()
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not delete this role.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not delete this role.'), 'error')
   }
 }
 
@@ -134,8 +134,8 @@ async function createPermission() {
     newPermission.value = { name: '', slug: '', description: '' }
     notifications.show('Permission saved.', 'success')
     await loadData()
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not create the permission.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not create the permission.'), 'error')
   }
 }
 
@@ -150,8 +150,8 @@ async function removePermission(permission: Permission) {
     await api.delete(`/admin/permissions/${permission.id}`)
     notifications.show('Permission deleted.', 'success')
     await loadData()
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not delete this permission.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not delete this permission.'), 'error')
   }
 }
 

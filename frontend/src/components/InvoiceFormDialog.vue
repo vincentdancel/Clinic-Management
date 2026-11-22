@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { api } from '@/services/api'
+import axios from 'axios'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useNotificationsStore } from '@/stores/notifications'
 import {
   formatCurrency,
@@ -172,11 +173,11 @@ async function submit() {
     notifications.show(data.message ?? 'Invoice generated successfully.', 'success')
     emit('saved', data.data)
     emit('update:modelValue', false)
-  } catch (error: any) {
-    if (error.response?.status === 422 && error.response.data?.errors) {
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response?.status === 422 && error.response.data?.errors) {
       errors.value = error.response.data.errors
     } else {
-      notifications.show(error.response?.data?.message ?? 'Could not generate invoice.', 'error')
+      notifications.show(getApiErrorMessage(error, 'Could not generate invoice.'), 'error')
     }
   } finally {
     saving.value = false

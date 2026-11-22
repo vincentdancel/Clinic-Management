@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import EmployeeFormDialog, { type EmployeeRecord } from '@/components/EmployeeFormDialog.vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 
@@ -37,8 +37,8 @@ async function loadOptions() {
     departments.value = response.data.departments
     specializations.value = response.data.specializations
     roles.value = response.data.roles
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load employee form options.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load employee form options.'), 'error')
   }
 }
 
@@ -48,8 +48,8 @@ async function loadEmployees() {
     const response = await api.get<Page>('/employees', { params: { search: search.value || undefined, department_id: departmentId.value || undefined, status: status.value, page: options.page } })
     employees.value = response.data.data
     total.value = response.data.meta.total
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load employee records.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load employee records.'), 'error')
   } finally {
     busy.value = false
   }
@@ -70,8 +70,8 @@ async function archiveEmployee(employee: EmployeeRecord) {
     await api.delete(`/employees/${employee.id}`)
     notifications.show('Employee record archived.', 'success')
     await loadEmployees()
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not archive this employee.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not archive this employee.'), 'error')
   }
 }
 </script>

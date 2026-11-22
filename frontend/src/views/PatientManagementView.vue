@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import PatientFormDialog, { type PatientRecord } from '@/components/PatientFormDialog.vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 
@@ -36,8 +36,8 @@ async function loadPatients() {
     const response = await api.get<PatientPage>('/patients', { params: { search: search.value || undefined, gender: gender.value || undefined, status: status.value, page: options.page } })
     patients.value = response.data.data
     total.value = response.data.meta.total
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load patient records.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load patient records.'), 'error')
   } finally {
     busy.value = false
   }
@@ -60,8 +60,8 @@ async function archivePatient(patient: PatientRecord) {
     await api.delete(`/patients/${patient.id}`)
     notifications.show('Patient record archived.', 'success')
     await loadPatients()
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not archive this patient.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not archive this patient.'), 'error')
   }
 }
 

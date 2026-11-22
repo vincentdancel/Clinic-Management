@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
-import { api } from '@/services/api'
+import axios from 'axios'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useNotificationsStore } from '@/stores/notifications'
 import {
   formatDateTime,
@@ -85,9 +86,9 @@ async function submit() {
     notifications.show('Consultation record started.', 'success')
     emit('created', response.data.data.id)
     close()
-  } catch (error: any) {
-    errors.value = error.response?.data?.errors ?? {}
-    notifications.show(error.response?.data?.message ?? 'Could not start consultation.', 'error')
+  } catch (error: unknown) {
+    errors.value = axios.isAxiosError(error) ? (error.response?.data?.errors ?? {}) : {}
+    notifications.show(getApiErrorMessage(error, 'Could not start consultation.'), 'error')
   } finally {
     saving.value = false
   }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useNotificationsStore } from '@/stores/notifications'
 
 export interface PatientRecord {
@@ -64,9 +64,8 @@ async function savePatient() {
     notifications.show(isEditing.value ? 'Patient profile updated.' : 'Patient registered successfully.', 'success')
     emit('update:modelValue', false)
     emit('saved', patient.id)
-  } catch (error: any) {
-    const firstError = Object.values(error.response?.data?.errors ?? {}).flat()[0]
-    notifications.show(typeof firstError === 'string' ? firstError : error.response?.data?.message ?? 'Could not save this patient record.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not save this patient record.'), 'error')
   } finally {
     busy.saving = false
   }

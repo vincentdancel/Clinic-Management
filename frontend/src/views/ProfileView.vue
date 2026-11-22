@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 
@@ -28,8 +28,8 @@ async function submit() {
     auth.user = data.user
     currentPassword.value = password.value = passwordConfirmation.value = ''
     notifications.show('Your profile has been updated.', 'success')
-  } catch (cause: any) {
-    notifications.show(cause.response?.data?.message ?? 'Unable to update your profile.', 'error')
+  } catch (cause: unknown) {
+    notifications.show(getApiErrorMessage(cause, 'Unable to update your profile.'), 'error')
   } finally {
     loading.value = false
   }

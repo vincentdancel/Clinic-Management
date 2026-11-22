@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 import {
@@ -110,8 +110,8 @@ async function loadConsultation() {
     ])
     patientHistory.value = historyRes.data.consultations
     auditLogs.value = auditRes.data.data
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load consultation record.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load consultation record.'), 'error')
     void router.replace({ name: 'consultations' })
   } finally {
     loading.value = false
@@ -146,8 +146,8 @@ async function saveClinicalAssessment() {
     syncClinicalForm(data.data)
     notifications.show('Clinical record saved.', 'success')
     await refreshAuditLogs()
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not save clinical record.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not save clinical record.'), 'error')
   } finally {
     savingClinical.value = false
   }
@@ -161,8 +161,8 @@ async function completeConsultation() {
     consultation.value = data.data
     notifications.show('Consultation marked as completed.', 'success')
     await refreshAuditLogs()
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not complete consultation.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not complete consultation.'), 'error')
   } finally {
     completing.value = false
   }
@@ -202,9 +202,8 @@ async function recordVitalSigns() {
     })
     notifications.show('Vital signs recorded.', 'success')
     await loadConsultation()
-  } catch (error: any) {
-    const firstError = Object.values(error.response?.data?.errors ?? {}).flat()[0] as string | undefined
-    notifications.show(firstError ?? error.response?.data?.message ?? 'Could not record vital signs.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not record vital signs.'), 'error')
   } finally {
     savingVitals.value = false
   }
@@ -248,9 +247,8 @@ async function createPrescription() {
     prescriptionForm.items = [emptyPrescriptionItem()]
     notifications.show('Prescription created.', 'success')
     await loadConsultation()
-  } catch (error: any) {
-    const firstError = Object.values(error.response?.data?.errors ?? {}).flat()[0] as string | undefined
-    notifications.show(firstError ?? error.response?.data?.message ?? 'Could not create prescription.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not create prescription.'), 'error')
   } finally {
     savingPrescription.value = false
   }
@@ -262,8 +260,8 @@ async function updatePrescriptionStatus(prescriptionId: number, status: 'active'
     await api.patch(`/consultations/${consultation.value.id}/prescriptions/${prescriptionId}/status`, { status })
     notifications.show(`Prescription marked as ${status}.`, 'success')
     await loadConsultation()
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not update prescription.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not update prescription.'), 'error')
   }
 }
 

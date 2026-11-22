@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useNotificationsStore } from '@/stores/notifications'
 import {
   APPOINTMENT_STATUS_META,
@@ -123,9 +123,8 @@ async function changeStatus(status: AppointmentStatus) {
     notifications.show(`Appointment marked as ${APPOINTMENT_STATUS_META[status].label}.`, 'success')
     await loadDetails(current.value.id)
     emit('updated')
-  } catch (error: any) {
-    const firstError = Object.values(error.response?.data?.errors ?? {}).flat()[0]
-    notifications.show(typeof firstError === 'string' ? firstError : error.response?.data?.message ?? 'Could not update status.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not update status.'), 'error')
   } finally {
     busy.saving = false
   }
@@ -146,9 +145,8 @@ async function submitReschedule() {
     activePanel.value = 'overview'
     await loadDetails(current.value.id)
     emit('updated')
-  } catch (error: any) {
-    const firstError = Object.values(error.response?.data?.errors ?? {}).flat()[0]
-    notifications.show(typeof firstError === 'string' ? firstError : error.response?.data?.message ?? 'Could not reschedule appointment.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not reschedule appointment.'), 'error')
   } finally {
     busy.saving = false
   }
@@ -165,9 +163,8 @@ async function submitCancel() {
     activePanel.value = 'overview'
     await loadDetails(current.value.id)
     emit('updated')
-  } catch (error: any) {
-    const firstError = Object.values(error.response?.data?.errors ?? {}).flat()[0]
-    notifications.show(typeof firstError === 'string' ? firstError : error.response?.data?.message ?? 'Could not cancel appointment.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not cancel appointment.'), 'error')
   } finally {
     busy.saving = false
   }

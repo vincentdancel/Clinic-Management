@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import ConsultationFormDialog from '@/components/ConsultationFormDialog.vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 import {
@@ -76,8 +76,8 @@ async function loadConsultations() {
     })
     consultations.value = data.data
     total.value = data.meta.total
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load consultation records.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load consultation records.'), 'error')
   } finally {
     busy.value = false
   }

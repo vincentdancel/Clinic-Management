@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import PatientFormDialog, { type AllergyRecord, type MedicalHistoryRecord, type PatientRecord } from '@/components/PatientFormDialog.vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 
@@ -19,14 +19,14 @@ const canManage = computed(() => auth.hasPermission('patients.manage'))
 const allergy = reactive({ allergen: '', reaction: '', severity: '', notes: '' })
 const history = reactive({ condition_name: '', details: '', diagnosed_at: '', resolved_at: '' })
 
-function errorMessage(error: any, fallback: string): string { return error.response?.data?.message ?? fallback }
+function errorMessage(error: unknown, fallback: string): string { return getApiErrorMessage(error, fallback) }
 function formatDate(value: string | null): string { return value ? new Intl.DateTimeFormat('en-PH', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date(`${value}T00:00:00`)) : '—' }
 async function loadPatient() {
   loading.value = true
   try {
     const response = await api.get(`/patients/${route.params.patientId}`)
     patient.value = response.data.data
-  } catch (error: any) {
+  } catch (error: unknown) {
     notifications.show(errorMessage(error, 'Could not load the patient profile.'), 'error')
     void router.replace({ name: 'patients' })
   } finally { loading.value = false }
@@ -40,12 +40,12 @@ async function addAllergy() {
     Object.assign(allergy, { allergen: '', reaction: '', severity: '', notes: '' })
     notifications.show('Allergy added.', 'success')
     await loadPatient()
-  } catch (error: any) { notifications.show(errorMessage(error, 'Could not add the allergy.'), 'error') } finally { allergySaving.value = false }
+  } catch (error: unknown) { notifications.show(errorMessage(error, 'Could not add the allergy.'), 'error') } finally { allergySaving.value = false }
 }
 
 async function removeAllergy(item: AllergyRecord) {
   if (!patient.value || !confirm(`Remove ${item.allergen} from this profile?`)) return
-  try { await api.delete(`/patients/${patient.value.id}/allergies/${item.id}`); notifications.show('Allergy removed.', 'success'); await loadPatient() } catch (error: any) { notifications.show(errorMessage(error, 'Could not remove the allergy.'), 'error') }
+  try { await api.delete(`/patients/${patient.value.id}/allergies/${item.id}`); notifications.show('Allergy removed.', 'success'); await loadPatient() } catch (error: unknown) { notifications.show(errorMessage(error, 'Could not remove the allergy.'), 'error') }
 }
 
 async function addHistory() {
@@ -56,17 +56,17 @@ async function addHistory() {
     Object.assign(history, { condition_name: '', details: '', diagnosed_at: '', resolved_at: '' })
     notifications.show('Medical history added.', 'success')
     await loadPatient()
-  } catch (error: any) { notifications.show(errorMessage(error, 'Could not add medical history.'), 'error') } finally { historySaving.value = false }
+  } catch (error: unknown) { notifications.show(errorMessage(error, 'Could not add medical history.'), 'error') } finally { historySaving.value = false }
 }
 
 async function removeHistory(item: MedicalHistoryRecord) {
   if (!patient.value || !confirm(`Remove ${item.condition_name} from this profile?`)) return
-  try { await api.delete(`/patients/${patient.value.id}/medical-history/${item.id}`); notifications.show('Medical history removed.', 'success'); await loadPatient() } catch (error: any) { notifications.show(errorMessage(error, 'Could not remove medical history.'), 'error') }
+  try { await api.delete(`/patients/${patient.value.id}/medical-history/${item.id}`); notifications.show('Medical history removed.', 'success'); await loadPatient() } catch (error: unknown) { notifications.show(errorMessage(error, 'Could not remove medical history.'), 'error') }
 }
 
 async function archivePatient() {
   if (!patient.value || !confirm(`Archive ${patient.value.first_name} ${patient.value.last_name}'s record?`)) return
-  try { await api.delete(`/patients/${patient.value.id}`); notifications.show('Patient record archived.', 'success'); void router.push({ name: 'patients' }) } catch (error: any) { notifications.show(errorMessage(error, 'Could not archive this patient.'), 'error') }
+  try { await api.delete(`/patients/${patient.value.id}`); notifications.show('Patient record archived.', 'success'); void router.push({ name: 'patients' }) } catch (error: unknown) { notifications.show(errorMessage(error, 'Could not archive this patient.'), 'error') }
 }
 
 onMounted(loadPatient)

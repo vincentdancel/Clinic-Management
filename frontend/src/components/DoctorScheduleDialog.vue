@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useNotificationsStore } from '@/stores/notifications'
 import type { DoctorOption, DoctorScheduleRecord } from '@/types/appointment'
 
@@ -77,9 +77,8 @@ async function addSchedule() {
     notifications.show('Doctor schedule added.', 'success')
     await loadSchedules()
     emit('updated')
-  } catch (error: any) {
-    const firstError = Object.values(error.response?.data?.errors ?? {}).flat()[0]
-    notifications.show(typeof firstError === 'string' ? firstError : error.response?.data?.message ?? 'Could not save schedule.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not save schedule.'), 'error')
   } finally {
     busy.saving = false
   }
@@ -91,8 +90,8 @@ async function removeSchedule(id: number) {
     notifications.show('Schedule removed.', 'success')
     await loadSchedules()
     emit('updated')
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not remove schedule.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not remove schedule.'), 'error')
   }
 }
 </script>

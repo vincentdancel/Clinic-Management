@@ -3,7 +3,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import AppointmentDetailDialog from '@/components/AppointmentDetailDialog.vue'
 import AppointmentFormDialog from '@/components/AppointmentFormDialog.vue'
 import DoctorScheduleDialog from '@/components/DoctorScheduleDialog.vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 import {
@@ -170,8 +170,8 @@ async function loadOptions() {
     const response = await api.get<{ doctors: DoctorOption[]; patients: PatientOption[] }>('/appointments/options')
     doctors.value = response.data.doctors
     patients.value = response.data.patients
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load appointment options.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load appointment options.'), 'error')
   }
 }
 
@@ -192,8 +192,8 @@ async function loadAppointments() {
     })
     appointments.value = response.data.data
     total.value = response.data.meta.total
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load appointments.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load appointments.'), 'error')
   } finally {
     busy.value = false
   }
@@ -235,9 +235,8 @@ async function quickStatus(appointment: AppointmentRecord, status: AppointmentSt
     await api.patch(`/appointments/${appointment.id}/status`, { status })
     notifications.show(`Appointment marked as ${APPOINTMENT_STATUS_META[status].label}.`, 'success')
     await loadAppointments()
-  } catch (error: any) {
-    const firstError = Object.values(error.response?.data?.errors ?? {}).flat()[0]
-    notifications.show(typeof firstError === 'string' ? firstError : error.response?.data?.message ?? 'Could not update status.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not update status.'), 'error')
   }
 }
 </script>

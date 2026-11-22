@@ -99,7 +99,7 @@ function printReport() {
     <tbody>${rowsHtml || `<tr><td colspan="${r.columns.length}" style="text-align:center;padding:20px;">No records found.</td></tr>`}</tbody>
   </table>
   <div class="footer">Total records: ${r.rows.length}</div>
-  <script>window.onload = () => { window.print(); };<\/script>
+  <script>window.onload = () => { window.print(); };</scr` + `ipt>
 </body>
 </html>`)
   win.document.close()

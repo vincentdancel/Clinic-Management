@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
-import { api } from '@/services/api'
+import axios from 'axios'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useNotificationsStore } from '@/stores/notifications'
 import {
   formatCurrency,
@@ -72,17 +73,17 @@ async function submit() {
     notifications.show(data.message ?? 'Payment recorded successfully.', 'success')
     emit('recorded', { payment: data.data, invoice: data.invoice })
     emit('update:modelValue', false)
-  } catch (error: any) {
-    if (error.response?.status === 409) {
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response?.status === 409) {
       notifications.show(error.response.data?.message ?? 'Duplicate payment prevented.', 'info')
       if (error.response.data?.invoice && error.response.data?.data) {
         emit('recorded', { payment: error.response.data.data, invoice: error.response.data.invoice })
       }
       emit('update:modelValue', false)
-    } else if (error.response?.status === 422 && error.response.data?.errors) {
+    } else if (axios.isAxiosError(error) && error.response?.status === 422 && error.response.data?.errors) {
       errors.value = error.response.data.errors
     } else {
-      notifications.show(error.response?.data?.message ?? 'Could not record payment.', 'error')
+      notifications.show(getApiErrorMessage(error, 'Could not record payment.'), 'error')
     }
   } finally {
     saving.value = false

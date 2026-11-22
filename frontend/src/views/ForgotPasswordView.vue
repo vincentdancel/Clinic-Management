@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { prepareCsrfCookie } from '@/services/api'
 import { useNotificationsStore } from '@/stores/notifications'
 
@@ -16,8 +16,8 @@ async function submit() {
     const { data } = await api.post('/auth/forgot-password', { email: email.value })
     sent.value = true
     notifications.show(data.message, 'success')
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Unable to send a reset link.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Unable to send a reset link.'), 'error')
   } finally {
     loading.value = false
   }

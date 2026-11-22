@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useNotificationsStore } from '@/stores/notifications'
 import type { DoctorOption, PatientOption, TimeSlot } from '@/types/appointment'
 
@@ -140,9 +140,8 @@ async function submit() {
     notifications.show('Appointment scheduled successfully.', 'success')
     emit('update:modelValue', false)
     emit('saved')
-  } catch (error: any) {
-    const firstError = Object.values(error.response?.data?.errors ?? {}).flat()[0]
-    notifications.show(typeof firstError === 'string' ? firstError : error.response?.data?.message ?? 'Could not schedule appointment.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not schedule appointment.'), 'error')
   } finally {
     busy.saving = false
   }
@@ -200,7 +199,7 @@ async function submit() {
                 <template #item="{ props: itemProps, item }">
                   <v-list-item
                     v-bind="itemProps"
-                    :subtitle="item.raw.specializations.map((s: any) => s.name).join(', ') || item.raw.job_title"
+                    :subtitle="item.raw.specializations.map((s: { name: string }) => s.name).join(', ') || item.raw.job_title"
                   />
                 </template>
               </v-select>

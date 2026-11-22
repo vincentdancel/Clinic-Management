@@ -22,5 +22,11 @@ export default defineConfigWithVueTs(
 
   ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),
 
+  {
+    rules: {
+      'vue/valid-v-slot': ['error', { allowModifiers: true }],
+    },
+  },
+
   skipFormatting,
 )

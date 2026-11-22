@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 
@@ -72,8 +72,8 @@ async function loadDashboard() {
   try {
     const response = await api.get<DashboardData>('/dashboard')
     data.value = response.data
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load live dashboard data. Check the API connection and try again.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load live dashboard data. Check the API connection and try again.'), 'error')
   } finally {
     busy.value = false
   }

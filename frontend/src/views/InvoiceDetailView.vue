@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import PaymentFormDialog from '@/components/PaymentFormDialog.vue'
 import PrintableInvoiceDialog from '@/components/PrintableInvoiceDialog.vue'
 import PrintableReceiptDialog from '@/components/PrintableReceiptDialog.vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 import {
@@ -38,8 +38,8 @@ async function loadInvoice() {
   try {
     const { data } = await api.get(`/invoices/${route.params.invoiceId}`)
     invoice.value = data.data
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load invoice details.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load invoice details.'), 'error')
   } finally {
     loading.value = false
   }
@@ -52,8 +52,8 @@ async function cancelInvoice() {
     const { data } = await api.post(`/invoices/${invoice.value.id}/cancel`)
     invoice.value = data.data
     notifications.show(data.message ?? 'Invoice cancelled.', 'success')
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not cancel invoice.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not cancel invoice.'), 'error')
   } finally {
     cancelling.value = false
   }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getApiErrorMessage } from '@/services/api'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -21,8 +22,8 @@ async function submit() {
     await auth.login(email.value, password.value, remember.value)
     notifications.show('Welcome back.', 'success')
     await router.replace(typeof route.query.redirect === 'string' ? route.query.redirect : '/')
-  } catch (cause: any) {
-    error.value = cause.response?.data?.message ?? 'Unable to sign in. Please try again.'
+  } catch (cause: unknown) {
+    error.value = getApiErrorMessage(cause, 'Unable to sign in. Please try again.')
   } finally {
     loading.value = false
   }

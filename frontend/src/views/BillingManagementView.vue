@@ -5,7 +5,7 @@ import InvoiceFormDialog from '@/components/InvoiceFormDialog.vue'
 import PaymentFormDialog from '@/components/PaymentFormDialog.vue'
 import PrintableInvoiceDialog from '@/components/PrintableInvoiceDialog.vue'
 import PrintableReceiptDialog from '@/components/PrintableReceiptDialog.vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 import {
@@ -116,8 +116,8 @@ async function loadInvoices() {
     invoices.value = data.data
     invoiceTotal.value = data.meta.total
     if (data.summary) summary.value = data.summary
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load invoices.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load invoices.'), 'error')
   } finally {
     invoiceBusy.value = false
   }
@@ -136,8 +136,8 @@ async function loadTransactions() {
     })
     transactions.value = data.data
     transactionTotal.value = data.meta.total
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load transaction history.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load transaction history.'), 'error')
   } finally {
     transactionBusy.value = false
   }

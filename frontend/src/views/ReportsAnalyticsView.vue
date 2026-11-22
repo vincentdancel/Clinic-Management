@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { api } from '@/services/api'
+import { api, getApiErrorMessage } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 import ReportCharts from '@/components/ReportCharts.vue'
@@ -180,8 +180,8 @@ async function loadOptions() {
       selectedType.value = options.value.catalog[0]!.type
       await loadReport()
     }
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Could not load report catalog.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Could not load report catalog.'), 'error')
   } finally {
     loadingOptions.value = false
   }
@@ -195,8 +195,8 @@ async function loadReport() {
       params: buildQueryParams(),
     })
     report.value = data.data
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? 'Failed to generate report.', 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, 'Failed to generate report.'), 'error')
   } finally {
     loadingReport.value = false
   }
@@ -219,8 +219,8 @@ async function exportReport(format: 'pdf' | 'xlsx') {
     link.remove()
     URL.revokeObjectURL(url)
     notifications.show(`Report exported as ${format.toUpperCase()}.`, 'success')
-  } catch (error: any) {
-    notifications.show(error.response?.data?.message ?? `Could not export ${format.toUpperCase()} report.`, 'error')
+  } catch (error: unknown) {
+    notifications.show(getApiErrorMessage(error, `Could not export ${format.toUpperCase()} report.`), 'error')
   } finally {
     exportingFormat.value = null
   }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { api, prepareCsrfCookie } from '@/services/api'
+import { api, getApiErrorMessage, prepareCsrfCookie } from '@/services/api'
 import { useNotificationsStore } from '@/stores/notifications'
 
 const route = useRoute()
@@ -25,8 +25,8 @@ async function submit() {
     })
     notifications.show(data.message, 'success')
     await router.replace('/login')
-  } catch (cause: any) {
-    error.value = cause.response?.data?.message ?? 'Unable to reset your password.'
+  } catch (cause: unknown) {
+    error.value = getApiErrorMessage(cause, 'Unable to reset your password.')
   } finally {
     loading.value = false
   }
