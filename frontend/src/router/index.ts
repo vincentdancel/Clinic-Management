@@ -18,7 +18,7 @@ const router = createRouter({
     { path: '/billing/invoices/:invoiceId', name: 'invoice-detail', component: () => import('@/views/InvoiceDetailView.vue'), meta: { requiresAuth: true, title: 'Invoice Details', permission: 'billing.view' } },
     { path: '/inventory', name: 'inventory', component: () => import('@/views/InventoryManagementView.vue'), meta: { requiresAuth: true, title: 'Medicine & Inventory', permission: 'inventory.manage' } },
     { path: '/reports', name: 'reports', component: () => import('@/views/ReportsAnalyticsView.vue'), meta: { requiresAuth: true, title: 'Reports & Analytics', permission: 'reports.view' } },
-    { path: '/settings', name: 'settings', component: () => import('@/views/ModuleView.vue'), meta: { requiresAuth: true, title: 'Settings', description: 'Clinic preferences and workspace configuration.' } },
+    { path: '/settings', name: 'settings', component: () => import('@/views/SettingsView.vue'), meta: { requiresAuth: true, title: 'Settings', description: 'Clinic preferences and workspace configuration.' } },
     { path: '/profile', name: 'profile', component: () => import('@/views/ProfileView.vue'), meta: { requiresAuth: true, title: 'My profile' } },
     { path: '/admin', name: 'admin', component: () => import('@/views/AdminView.vue'), meta: { requiresAuth: true, title: 'User Management', roles: ['administrator'], permission: 'users.manage' } },
   ],

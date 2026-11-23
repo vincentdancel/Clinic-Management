@@ -16,6 +16,24 @@
   --clinic-error: #dc2626;
 }
 
+:root.dark {
+  --clinic-bg: #0b1220;
+  --clinic-surface: #111827;
+  --clinic-border: #1e293b;
+  --clinic-border-strong: #334155;
+  --clinic-text: #f1f5f9;
+  --clinic-text-secondary: #cbd5e1;
+  --clinic-text-muted: #94a3b8;
+  --clinic-primary: #3b82f6;
+  --clinic-primary-soft: rgba(59, 130, 246, 0.16);
+  --clinic-secondary: #14b8a6;
+  --clinic-secondary-soft: rgba(20, 184, 166, 0.16);
+  --clinic-success: #22c55e;
+  --clinic-warning: #f59e0b;
+  --clinic-error: #ef4444;
+  color-scheme: dark;
+}
+
 *,
 *::before,
 *::after {

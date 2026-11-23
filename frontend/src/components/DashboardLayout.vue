@@ -4,9 +4,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
+import { useThemeMode } from '@/composables/useThemeMode'
 
 const auth = useAuthStore()
 const notices = useNotificationsStore()
+const { isDark, toggleTheme } = useThemeMode()
 const route = useRoute()
 const router = useRouter()
 const display = useDisplay()
@@ -162,6 +164,14 @@ async function logout() {
         </v-list>
       </v-card>
     </v-menu>
+    <v-btn
+      :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
+      variant="text"
+      :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+      :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+      class="appbar-icon"
+      @click="toggleTheme"
+    />
     <v-menu location="bottom end" :close-on-content-click="false">
       <template #activator="{ props }">
         <v-btn v-bind="props" icon variant="text" aria-label="Notifications" class="appbar-icon notification-trigger">

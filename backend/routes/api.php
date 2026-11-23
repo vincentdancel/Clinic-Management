@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
@@ -174,4 +175,9 @@ Route::middleware(['auth:sanctum', 'active', 'permission:reports.view'])->prefix
     Route::get('/options', [ReportController::class, 'options']);
     Route::get('/{type}/export', [ReportController::class, 'export']);
     Route::get('/{type}', [ReportController::class, 'show']);
+});
+
+Route::middleware(['auth:sanctum', 'active'])->prefix('settings')->group(function (): void {
+    Route::get('/', [SettingController::class, 'index']);
+    Route::put('/', [SettingController::class, 'update'])->middleware('permission:settings.manage');
 });

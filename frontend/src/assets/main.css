@@ -81,6 +81,13 @@ a {
   border-bottom: 1px solid var(--clinic-border);
 }
 
+.clinic-sidebar.v-navigation-drawer--rail .sidebar-brand {
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 8px;
+}
+
 .brand-lockup {
   display: flex;
   align-items: center;
@@ -210,6 +217,10 @@ a {
   border-bottom: 1px solid var(--clinic-border) !important;
   background: rgba(255, 255, 255, 0.96) !important;
   backdrop-filter: blur(10px);
+}
+
+html.dark .clinic-appbar {
+  background: rgba(17, 24, 39, 0.92) !important;
 }
 
 .appbar-heading {
@@ -381,7 +392,7 @@ a {
 
 .stat-card {
   min-height: 144px;
-  padding: 16px 18px 14px;
+  padding: 16px 18px 14px !important;
   height: 100%;
 }
 
@@ -473,7 +484,7 @@ a {
 
 .panel-card {
   height: 100%;
-  padding: 20px 22px;
+  padding: 20px 22px !important;
 }
 
 .panel-heading {
