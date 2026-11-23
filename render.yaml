@@ -2,6 +2,7 @@ services:
   - type: web
     name: clinic-management-backend
     runtime: docker
+    plan: free
     rootDir: backend
     dockerfilePath: ./Dockerfile
     healthCheckPath: /up
