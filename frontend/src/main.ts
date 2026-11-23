@@ -1,5 +1,6 @@
-import './assets/main.css'
 import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css'
+import './assets/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -18,8 +19,29 @@ app.use(createVuetify({
     themes: {
       clinicLight: {
         dark: false,
-        colors: { primary: '#167D78', secondary: '#84B9A8', background: '#F4F8F7', surface: '#FFFFFF', error: '#B84444' },
+        colors: {
+          primary: '#1565C0',
+          secondary: '#0D9488',
+          background: '#F4F7FA',
+          surface: '#FFFFFF',
+          'surface-variant': '#EEF3F8',
+          'on-background': '#1E293B',
+          'on-surface': '#1E293B',
+          'on-surface-variant': '#475569',
+          success: '#16A34A',
+          warning: '#D97706',
+          error: '#DC2626',
+          info: '#0284C7',
+        },
       },
+    },
+  },
+  defaults: {
+    VBtn: {
+      style: 'text-transform: none; letter-spacing: normal;',
+    },
+    VDialog: {
+      scrollable: true,
     },
   },
 }))

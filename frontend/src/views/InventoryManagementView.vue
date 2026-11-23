@@ -436,7 +436,7 @@ onMounted(refreshAll)
     </v-row>
 
     <v-card rounded="xl" border elevation="0">
-      <v-tabs v-model="activeTab" color="primary" class="px-4 border-b">
+      <v-tabs v-model="activeTab" color="primary" show-arrows class="px-4 border-b">
         <v-tab value="catalog" prepend-icon="mdi-pill">Medicine Catalog</v-tab>
         <v-tab value="transactions" prepend-icon="mdi-history">Stock Transactions</v-tab>
       </v-tabs>

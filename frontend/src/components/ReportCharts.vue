@@ -249,7 +249,7 @@ function formatVal(val: number): string {
   flex-shrink: 0;
 }
 .bar-chart-wrap {
-  height: 220px;
+  height: 240px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -258,8 +258,8 @@ function formatVal(val: number): string {
   display: flex;
   align-items: flex-end;
   gap: 8px;
-  height: 195px;
-  padding-top: 24px;
+  height: 215px;
+  padding-top: 48px;
   border-bottom: 1px solid #e2e8f0;
   overflow-x: auto;
 }
@@ -299,7 +299,7 @@ function formatVal(val: number): string {
 }
 .bar-popover {
   position: absolute;
-  top: -4px;
+  top: -42px;
   background: #0f172a;
   color: #ffffff;
   font-size: 11px;

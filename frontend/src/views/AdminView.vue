@@ -62,6 +62,12 @@ async function createUser() {
   }
 }
 
+function openNewUser() {
+  editingUserId.value = null
+  newUser.value = { name: '', email: '', password: '', password_confirmation: '', role_id: null }
+  userDialog.value = true
+}
+
 function editUser(user: ManagedUser) {
   editingUserId.value = user.id
   newUser.value = {
@@ -99,6 +105,12 @@ async function createRole() {
   } catch (error: unknown) {
     notifications.show(getApiErrorMessage(error, 'Could not create the role.'), 'error')
   }
+}
+
+function openNewRole() {
+  editingRoleId.value = null
+  newRole.value = { name: '', slug: '', description: '', permission_ids: [] }
+  roleDialog.value = true
 }
 
 function editRole(role: Role) {
@@ -139,6 +151,12 @@ async function createPermission() {
   }
 }
 
+function openNewPermission() {
+  editingPermissionId.value = null
+  newPermission.value = { name: '', slug: '', description: '' }
+  permissionDialog.value = true
+}
+
 function editPermission(permission: Permission) {
   editingPermissionId.value = permission.id
   newPermission.value = { name: permission.name, slug: permission.slug, description: permission.description ?? '' }
@@ -162,16 +180,17 @@ onMounted(loadData)
   <div class="app-shell"><header class="topbar"><RouterLink to="/" class="auth-brand text-decoration-none"><span class="brand-mark">C</span><span>CLINIC <b>CARE</b></span></RouterLink>
     <div class="d-flex align-center ga-3"><span class="text-body-2 text-medium-emphasis">{{ auth.user?.name }}</span><v-btn to="/" variant="text" prepend-icon="mdi-arrow-left">Workspace</v-btn></div></header>
     <main class="workspace"><div class="eyebrow">ADMINISTRATION</div><h1 class="text-h3 font-weight-bold mt-2">Access management</h1><p class="text-medium-emphasis mt-2">Manage staff accounts, roles, and the permissions available to each role.</p>
-      <v-card class="feature-card mt-7" rounded="xl" elevation="0"><v-tabs v-model="tab" color="primary"><v-tab value="users">User accounts</v-tab><v-tab value="roles">Roles</v-tab><v-tab value="permissions">Permissions</v-tab></v-tabs><v-divider />
-        <v-window v-model="tab"><v-window-item value="users"><div class="pa-5 d-flex justify-end"><v-btn color="primary" prepend-icon="mdi-account-plus-outline" rounded="lg" @click="userDialog = true">Add user</v-btn></div>
-          <v-table :loading="busy"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th class="text-right">Actions</th></tr></thead><tbody>
+      <v-card class="feature-card mt-7" rounded="xl" elevation="0"><v-tabs v-model="tab" color="primary" show-arrows><v-tab value="users">User accounts</v-tab><v-tab value="roles">Roles</v-tab><v-tab value="permissions">Permissions</v-tab></v-tabs><v-divider />
+        <v-progress-linear v-if="busy" indeterminate color="primary" height="2" />
+        <v-window v-model="tab"><v-window-item value="users"><div class="pa-5 d-flex justify-end"><v-btn color="primary" prepend-icon="mdi-account-plus-outline" rounded="lg" @click="openNewUser">Add user</v-btn></div>
+          <v-table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th class="text-right">Actions</th></tr></thead><tbody>
             <tr v-for="user in users" :key="user.id"><td class="font-weight-medium">{{ user.name }}</td><td>{{ user.email }}</td><td><v-chip size="small" variant="tonal">{{ user.role?.name ?? 'Unassigned' }}</v-chip></td>
               <td><v-chip size="small" :color="user.is_active ? 'success' : 'default'" variant="tonal">{{ user.is_active ? 'Active' : 'Inactive' }}</v-chip></td><td class="text-right"><v-btn size="small" icon="mdi-pencil-outline" variant="text" aria-label="Edit user" @click="editUser(user)" /><v-btn size="small" variant="text" :disabled="user.id === auth.user?.id" @click="toggleUser(user)">{{ user.is_active ? 'Deactivate' : 'Activate' }}</v-btn></td></tr>
           </tbody></v-table></v-window-item>
-          <v-window-item value="roles"><div class="pa-5 d-flex justify-end"><v-btn color="primary" prepend-icon="mdi-shield-plus-outline" rounded="lg" @click="roleDialog = true">Create role</v-btn></div>
+          <v-window-item value="roles"><div class="pa-5 d-flex justify-end"><v-btn color="primary" prepend-icon="mdi-shield-plus-outline" rounded="lg" @click="openNewRole">Create role</v-btn></div>
             <v-list lines="two"><v-list-item v-for="role in roles" :key="role.id" :title="role.name" :subtitle="`${role.slug} · ${role.permissions.length} permissions`"><template #append><v-btn icon="mdi-pencil-outline" variant="text" aria-label="Edit role" @click="editRole(role)" /><v-btn icon="mdi-delete-outline" variant="text" aria-label="Delete role" @click="removeRole(role)" /></template></v-list-item></v-list>
           </v-window-item>
-          <v-window-item value="permissions"><div class="pa-5 d-flex justify-end"><v-btn color="primary" prepend-icon="mdi-key-plus" rounded="lg" @click="permissionDialog = true">Add permission</v-btn></div>
+          <v-window-item value="permissions"><div class="pa-5 d-flex justify-end"><v-btn color="primary" prepend-icon="mdi-key-plus" rounded="lg" @click="openNewPermission">Add permission</v-btn></div>
             <v-list lines="two"><v-list-item v-for="permission in permissions" :key="permission.id" :title="permission.name" :subtitle="permission.slug"><template #append><v-btn icon="mdi-pencil-outline" variant="text" aria-label="Edit permission" @click="editPermission(permission)" /><v-btn icon="mdi-delete-outline" variant="text" aria-label="Delete permission" @click="removePermission(permission)" /></template></v-list-item></v-list>
           </v-window-item></v-window>
       </v-card>

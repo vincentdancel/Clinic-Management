@@ -140,7 +140,7 @@ onMounted(() => {
           </p>
         </div>
 
-        <div class="d-flex flex-wrap align-center ga-3">
+        <div class="d-flex flex-wrap align-center ga-3 w-100 w-lg-auto">
           <v-text-field
             v-model="search"
             prepend-inner-icon="mdi-magnify"
@@ -149,7 +149,7 @@ onMounted(() => {
             density="comfortable"
             variant="outlined"
             clearable
-            style="min-width: 280px"
+            style="flex: 1 1 240px; min-width: 0"
           />
           <v-select
             v-model="doctorFilter"
@@ -161,7 +161,7 @@ onMounted(() => {
             density="comfortable"
             variant="outlined"
             clearable
-            style="min-width: 200px"
+            style="flex: 1 1 180px; min-width: 0"
           />
           <v-select
             v-model="statusFilter"
@@ -175,7 +175,7 @@ onMounted(() => {
             hide-details
             density="comfortable"
             variant="outlined"
-            style="min-width: 165px"
+            style="flex: 1 1 150px; min-width: 0"
           />
         </div>
       </div>

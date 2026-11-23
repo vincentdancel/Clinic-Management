@@ -463,7 +463,7 @@ onMounted(() => {
             </div>
           </div>
 
-          <v-tabs v-model="activeTab" color="primary" class="px-4 border-b">
+          <v-tabs v-model="activeTab" color="primary" show-arrows class="px-4 border-b">
             <v-tab value="assessment" prepend-icon="mdi-stethoscope">Clinical Assessment</v-tab>
             <v-tab value="vitals" prepend-icon="mdi-heart-pulse">
               Vital Signs & BMI ({{ consultation.vital_signs?.length ?? 0 }})

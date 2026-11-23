@@ -86,14 +86,14 @@ onMounted(loadDashboard)
   <section class="dashboard-page">
     <div class="welcome-row">
       <div><p class="eyebrow">{{ dateLabel }}</p><h1>Good {{ new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening' }}, {{ auth.user?.name?.split(' ')[0] }}.</h1><p class="welcome-subtitle">Here’s what’s happening at your clinic today.</p></div>
-      <div class="d-flex ga-2">
+      <div class="d-flex flex-wrap ga-2">
         <v-btn v-if="auth.hasPermission('reports.view')" to="/reports" color="primary" prepend-icon="mdi-chart-box-outline" variant="flat" rounded="lg">Reports & Analytics</v-btn>
         <v-btn color="primary" prepend-icon="mdi-refresh" variant="tonal" rounded="lg" :loading="busy" @click="loadDashboard">Refresh data</v-btn>
       </div>
     </div>
 
     <v-row class="stats-grid" dense>
-      <v-col v-for="item in stats" :key="item.label" cols="6" sm="6" lg="3">
+      <v-col v-for="item in stats" :key="item.label" cols="12" sm="6" lg="3">
         <v-card class="stat-card" rounded="xl" elevation="0">
           <div class="stat-top"><span class="stat-icon" :class="`tone-${item.tone}`"><v-icon :icon="item.icon" size="20" /></span><span class="stat-live"><i></i> Live</span></div>
           <p class="stat-label">{{ item.label }}</p><p class="stat-value" :class="{ 'stat-currency': typeof item.value === 'string' }">{{ busy ? '—' : item.value }}</p><p class="stat-hint">{{ item.hint }}</p>

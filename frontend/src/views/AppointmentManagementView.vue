@@ -427,49 +427,51 @@ async function quickStatus(appointment: AppointmentRecord, status: AppointmentSt
         </div>
 
         <!-- Monthly View -->
-        <div v-else class="month-grid">
-          <div v-for="name in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="name" class="month-head">
-            {{ name }}
-          </div>
-          <div
-            v-for="cell in monthCells"
-            :key="cell.iso"
-            class="month-cell"
-            :class="{ 'out-month': !cell.inMonth, 'is-today': cell.isToday }"
-          >
-            <div class="month-cell-top">
-              <button type="button" class="month-day-btn" @click="anchorDate = new Date(cell.iso + 'T00:00:00'); calendarView = 'day'">
-                {{ cell.dayNum }}
-              </button>
-              <v-btn
-                v-if="canManage"
-                icon="mdi-plus"
-                size="x-small"
-                variant="text"
-                class="month-add-btn"
-                aria-label="Add appointment"
-                @click="openCreate(cell.iso)"
-              />
+        <div v-else class="table-scroll">
+          <div class="month-grid">
+            <div v-for="name in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="name" class="month-head">
+              {{ name }}
             </div>
-            <div class="month-pills">
-              <button
-                v-for="item in (appointmentsByDate[cell.iso] ?? []).slice(0, 3)"
-                :key="item.id"
-                type="button"
-                class="month-pill"
-                :style="{ background: APPOINTMENT_STATUS_META[item.status].bg, color: APPOINTMENT_STATUS_META[item.status].text }"
-                @click="openDetail(item)"
-              >
-                <b>{{ formatAppointmentTime(item.scheduled_at) }}</b> {{ item.patient?.last_name }}
-              </button>
-              <button
-                v-if="(appointmentsByDate[cell.iso]?.length ?? 0) > 3"
-                type="button"
-                class="month-more"
-                @click="anchorDate = new Date(cell.iso + 'T00:00:00'); calendarView = 'day'"
-              >
-                +{{ (appointmentsByDate[cell.iso]?.length ?? 0) - 3 }} more
-              </button>
+            <div
+              v-for="cell in monthCells"
+              :key="cell.iso"
+              class="month-cell"
+              :class="{ 'out-month': !cell.inMonth, 'is-today': cell.isToday }"
+            >
+              <div class="month-cell-top">
+                <button type="button" class="month-day-btn" @click="anchorDate = new Date(cell.iso + 'T00:00:00'); calendarView = 'day'">
+                  {{ cell.dayNum }}
+                </button>
+                <v-btn
+                  v-if="canManage"
+                  icon="mdi-plus"
+                  size="x-small"
+                  variant="text"
+                  class="month-add-btn"
+                  aria-label="Add appointment"
+                  @click="openCreate(cell.iso)"
+                />
+              </div>
+              <div class="month-pills">
+                <button
+                  v-for="item in (appointmentsByDate[cell.iso] ?? []).slice(0, 3)"
+                  :key="item.id"
+                  type="button"
+                  class="month-pill"
+                  :style="{ background: APPOINTMENT_STATUS_META[item.status].bg, color: APPOINTMENT_STATUS_META[item.status].text }"
+                  @click="openDetail(item)"
+                >
+                  <b>{{ formatAppointmentTime(item.scheduled_at) }}</b> {{ item.patient?.last_name }}
+                </button>
+                <button
+                  v-if="(appointmentsByDate[cell.iso]?.length ?? 0) > 3"
+                  type="button"
+                  class="month-more"
+                  @click="anchorDate = new Date(cell.iso + 'T00:00:00'); calendarView = 'day'"
+                >
+                  +{{ (appointmentsByDate[cell.iso]?.length ?? 0) - 3 }} more
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -620,16 +622,17 @@ async function quickStatus(appointment: AppointmentRecord, status: AppointmentSt
 .day-card {
   display: flex;
   align-items: center;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 14px;
   padding: 14px 16px;
-  border: 1px solid #e9eef4;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #fff;
   cursor: pointer;
   transition: border-color 0.15s ease;
 }
 .day-card:hover {
-  border-color: #9ecae1;
+  border-color: #93c5fd;
 }
 .day-time {
   min-width: 86px;
@@ -637,25 +640,25 @@ async function quickStatus(appointment: AppointmentRecord, status: AppointmentSt
   flex-direction: column;
 }
 .day-time b {
-  color: #197fc0;
+  color: #1565c0;
   font-size: 13px;
 }
 .day-time span {
-  color: #8d9aa8;
-  font-size: 10px;
+  color: #64748b;
+  font-size: 11px;
 }
 .day-body {
-  flex: 1;
+  flex: 1 1 200px;
   min-width: 0;
 }
 .day-body b {
-  color: #23364a;
-  font-size: 13px;
+  color: #1e293b;
+  font-size: 14px;
 }
 .day-body p {
   margin: 4px 0 0;
-  color: #65778a;
-  font-size: 11px;
+  color: #475569;
+  font-size: 12px;
 }
 .day-actions {
   display: flex;
@@ -737,8 +740,9 @@ async function quickStatus(appointment: AppointmentRecord, status: AppointmentSt
 .month-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  border-top: 1px solid #e9eef4;
-  border-left: 1px solid #e9eef4;
+  min-width: 640px;
+  border-top: 1px solid #e2e8f0;
+  border-left: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
 }

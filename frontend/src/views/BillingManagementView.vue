@@ -228,7 +228,7 @@ onMounted(() => {
     </v-row>
 
     <v-card rounded="lg" variant="outlined" class="bg-white">
-      <v-tabs v-model="activeTab" color="primary" class="border-b px-4">
+      <v-tabs v-model="activeTab" color="primary" show-arrows class="border-b px-4">
         <v-tab value="invoices" prepend-icon="mdi-file-document-multiple-outline">Invoices</v-tab>
         <v-tab value="transactions" prepend-icon="mdi-history">Transaction History</v-tab>
       </v-tabs>
@@ -244,7 +244,7 @@ onMounted(() => {
               density="compact"
               hide-details
               clearable
-              style="min-width: 260px; max-width: 360px"
+              style="flex: 1 1 220px; min-width: 0; max-width: 360px"
             />
             <v-select
               v-model="statusFilter"
@@ -259,7 +259,7 @@ onMounted(() => {
               variant="outlined"
               density="compact"
               hide-details
-              style="max-width: 200px"
+              style="flex: 0 1 200px; min-width: 150px"
             />
           </div>
 
@@ -347,7 +347,7 @@ onMounted(() => {
               density="compact"
               hide-details
               clearable
-              style="min-width: 260px; max-width: 360px"
+              style="flex: 1 1 220px; min-width: 0; max-width: 360px"
             />
             <v-select
               v-model="methodFilter"
@@ -362,7 +362,7 @@ onMounted(() => {
               variant="outlined"
               density="compact"
               hide-details
-              style="max-width: 200px"
+              style="flex: 0 1 200px; min-width: 150px"
             />
           </div>
 
