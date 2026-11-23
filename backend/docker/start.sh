@@ -7,6 +7,7 @@ sed -ri "s/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/g" /etc/apache2/sites-ava
 
 php artisan config:clear
 php artisan migrate --force
+php artisan db:seed --force
 php artisan storage:link || true
 
 php artisan config:cache

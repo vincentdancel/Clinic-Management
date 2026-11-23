@@ -56,10 +56,10 @@ class DatabaseSeeder extends Seeder
             Service::firstOrCreate(['code' => $service['code']], [...$service, 'is_active' => true]);
         }
 
-        $adminEmail = env('CLINIC_ADMIN_EMAIL');
+        $adminEmail = strtolower(trim((string) env('CLINIC_ADMIN_EMAIL', '')));
         $adminPassword = env('CLINIC_ADMIN_PASSWORD');
 
-        if (is_string($adminEmail) && $adminEmail !== '' && is_string($adminPassword) && strlen($adminPassword) >= 12) {
+        if ($adminEmail !== '' && is_string($adminPassword) && strlen($adminPassword) >= 12) {
             User::firstOrCreate(
                 ['email' => $adminEmail],
                 [

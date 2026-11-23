@@ -49,3 +49,9 @@ services:
         sync: false
       - key: GOOGLE_REDIRECT_URI
         sync: false
+      - key: CLINIC_ADMIN_EMAIL
+        sync: false
+      - key: CLINIC_ADMIN_PASSWORD
+        sync: false
+      - key: CLINIC_ADMIN_NAME
+        value: Clinic Administrator

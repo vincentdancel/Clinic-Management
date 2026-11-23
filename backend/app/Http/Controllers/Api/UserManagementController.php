@@ -24,7 +24,11 @@ class UserManagementController extends Controller
             'role_id' => ['required', 'integer', 'exists:roles,id'],
         ]);
 
-        $user = User::create($validated);
+        $user = User::create([
+            ...$validated,
+            'email' => strtolower(trim($validated['email'])),
+            'is_active' => true,
+        ]);
 
         return response()->json(['message' => 'User account created.', 'user' => $user->load('role')], 201);
     }
@@ -36,6 +40,10 @@ class UserManagementController extends Controller
             'email' => ['sometimes', 'required', 'email', 'max:255', 'unique:users,email,'.$user->id],
             'role_id' => ['sometimes', 'required', 'integer', 'exists:roles,id'],
         ]);
+
+        if (isset($validated['email'])) {
+            $validated['email'] = strtolower(trim($validated['email']));
+        }
 
         $user->update($validated);
 

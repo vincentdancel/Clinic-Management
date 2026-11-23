@@ -69,4 +69,57 @@ class GoogleAuthTest extends TestCase
         $this->assertStringStartsWith('http://localhost:5173/login?oauth_error=', (string) $response->headers->get('Location'));
         $this->assertGuest();
     }
+
+    public function test_callback_matches_email_case_and_whitespace_insensitively(): void
+    {
+        config()->set('services.google.client_id', 'test-client-id');
+        config()->set('services.google.client_secret', 'test-client-secret');
+        config()->set('app.frontend_url', 'http://localhost:5173');
+
+        $role = Role::create(['name' => 'Cashier', 'slug' => 'cashier']);
+        $user = User::factory()->create([
+            'email' => '  Cashier@Clinic.Test ',
+            'role_id' => $role->id,
+            'is_active' => true,
+        ]);
+
+        $socialiteUser = Mockery::mock(SocialiteUser::class);
+        $socialiteUser->shouldReceive('getEmail')->andReturn('cashier@clinic.test');
+
+        Socialite::shouldReceive('driver')->with('google')->andReturnSelf();
+        Socialite::shouldReceive('user')->andReturn($socialiteUser);
+
+        $response = $this->get('/auth/google/callback');
+
+        $response->assertRedirect('http://localhost:5173/');
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_callback_rejects_inactive_user_with_inactive_message(): void
+    {
+        config()->set('services.google.client_id', 'test-client-id');
+        config()->set('services.google.client_secret', 'test-client-secret');
+        config()->set('app.frontend_url', 'http://localhost:5173');
+
+        $role = Role::create(['name' => 'Cashier', 'slug' => 'cashier']);
+        User::factory()->create([
+            'email' => 'inactive@clinic.test',
+            'role_id' => $role->id,
+            'is_active' => false,
+        ]);
+
+        $socialiteUser = Mockery::mock(SocialiteUser::class);
+        $socialiteUser->shouldReceive('getEmail')->andReturn('inactive@clinic.test');
+
+        Socialite::shouldReceive('driver')->with('google')->andReturnSelf();
+        Socialite::shouldReceive('user')->andReturn($socialiteUser);
+
+        $response = $this->get('/auth/google/callback');
+
+        $response->assertRedirect();
+        $location = (string) $response->headers->get('Location');
+        $this->assertStringStartsWith('http://localhost:5173/login?oauth_error=', $location);
+        $this->assertStringContainsString('inactive', urldecode($location));
+        $this->assertGuest();
+    }
 }

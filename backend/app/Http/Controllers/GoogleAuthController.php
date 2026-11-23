@@ -33,10 +33,18 @@ class GoogleAuthController extends Controller
         }
 
         $email = strtolower(trim((string) $googleUser->getEmail()));
-        $user = $email !== '' ? User::whereRaw('LOWER(email) = ?', [$email])->first() : null;
+        $user = $email !== '' ? User::whereRaw('LOWER(TRIM(email)) = ?', [$email])->first() : null;
 
-        if (! $user || ! $user->is_active) {
-            return $this->redirectWithError('No active clinic account found for this Google email. Please contact your administrator.');
+        if (! $user) {
+            return $this->redirectWithError(
+                $email !== ''
+                    ? "No clinic account found for {$email}. Please contact your administrator."
+                    : 'No active clinic account found for this Google email. Please contact your administrator.'
+            );
+        }
+
+        if (! $user->is_active) {
+            return $this->redirectWithError("The clinic account for {$email} is currently inactive. Please contact your administrator.");
         }
 
         Auth::login($user, true);
