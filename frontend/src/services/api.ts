@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { startRequestLoading, stopRequestLoading } from '@/composables/useGlobalLoading'
 
 const MUTATING_METHODS = new Set(['post', 'put', 'patch', 'delete'])
 
@@ -50,22 +51,38 @@ export async function prepareCsrfCookie(force = false): Promise<void> {
   await csrfPromise
 }
 
-api.interceptors.request.use(async (config) => {
-  const method = config.method?.toLowerCase() ?? 'get'
-  if (MUTATING_METHODS.has(method)) {
-    if (!csrfToken) {
-      await prepareCsrfCookie()
+api.interceptors.request.use(
+  async (config) => {
+    startRequestLoading()
+    try {
+      const method = config.method?.toLowerCase() ?? 'get'
+      if (MUTATING_METHODS.has(method)) {
+        if (!csrfToken) {
+          await prepareCsrfCookie()
+        }
+        if (csrfToken) {
+          config.headers.set('X-CSRF-TOKEN', csrfToken)
+        }
+      }
+      return config
+    } catch (error) {
+      stopRequestLoading()
+      throw error
     }
-    if (csrfToken) {
-      config.headers.set('X-CSRF-TOKEN', csrfToken)
-    }
-  }
-  return config
-})
+  },
+  (error) => {
+    stopRequestLoading()
+    return Promise.reject(error)
+  },
+)
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    stopRequestLoading()
+    return response
+  },
   async (error: unknown) => {
+    stopRequestLoading()
     if (axios.isAxiosError(error) && error.response?.status === 419 && error.config) {
       const retryConfig = error.config as typeof error.config & { _csrfRetried?: boolean }
       if (!retryConfig._csrfRetried) {

@@ -18,6 +18,10 @@ const userDialog = ref(false)
 const roleDialog = ref(false)
 const permissionDialog = ref(false)
 const busy = ref(false)
+const saving = ref(false)
+const togglingUserId = ref<number | null>(null)
+const deletingRoleId = ref<number | null>(null)
+const deletingPermissionId = ref<number | null>(null)
 const editingUserId = ref<number | null>(null)
 const newUser = ref({ name: '', email: '', password: '', password_confirmation: '', role_id: null as number | null })
 const newRole = ref({ name: '', slug: '', description: '', permission_ids: [] as number[] })
@@ -42,6 +46,7 @@ async function loadData() {
 }
 
 async function createUser() {
+  saving.value = true
   try {
     if (editingUserId.value) {
       await api.put(`/admin/users/${editingUserId.value}`, {
@@ -59,6 +64,8 @@ async function createUser() {
     await loadData()
   } catch (error: unknown) {
     notifications.show(getApiErrorMessage(error, 'Could not create the account. Check all fields.'), 'error')
+  } finally {
+    saving.value = false
   }
 }
 
@@ -81,16 +88,20 @@ function editUser(user: ManagedUser) {
 }
 
 async function toggleUser(user: ManagedUser) {
+  togglingUserId.value = user.id
   try {
     const { data } = await api.patch(`/admin/users/${user.id}/active`, { is_active: !user.is_active })
     user.is_active = data.user.is_active
     notifications.show(data.message, 'success')
   } catch (error: unknown) {
     notifications.show(getApiErrorMessage(error, 'Could not change this account status.'), 'error')
+  } finally {
+    togglingUserId.value = null
   }
 }
 
 async function createRole() {
+  saving.value = true
   try {
     if (editingRoleId.value) {
       await api.put(`/admin/roles/${editingRoleId.value}`, newRole.value)
@@ -104,6 +115,8 @@ async function createRole() {
     await loadData()
   } catch (error: unknown) {
     notifications.show(getApiErrorMessage(error, 'Could not create the role.'), 'error')
+  } finally {
+    saving.value = false
   }
 }
 
@@ -125,16 +138,20 @@ function editRole(role: Role) {
 }
 
 async function removeRole(role: Role) {
+  deletingRoleId.value = role.id
   try {
     await api.delete(`/admin/roles/${role.id}`)
     notifications.show('Role deleted.', 'success')
     await loadData()
   } catch (error: unknown) {
     notifications.show(getApiErrorMessage(error, 'Could not delete this role.'), 'error')
+  } finally {
+    deletingRoleId.value = null
   }
 }
 
 async function createPermission() {
+  saving.value = true
   try {
     if (editingPermissionId.value) {
       await api.put(`/admin/permissions/${editingPermissionId.value}`, newPermission.value)
@@ -148,6 +165,8 @@ async function createPermission() {
     await loadData()
   } catch (error: unknown) {
     notifications.show(getApiErrorMessage(error, 'Could not create the permission.'), 'error')
+  } finally {
+    saving.value = false
   }
 }
 
@@ -164,12 +183,15 @@ function editPermission(permission: Permission) {
 }
 
 async function removePermission(permission: Permission) {
+  deletingPermissionId.value = permission.id
   try {
     await api.delete(`/admin/permissions/${permission.id}`)
     notifications.show('Permission deleted.', 'success')
     await loadData()
   } catch (error: unknown) {
     notifications.show(getApiErrorMessage(error, 'Could not delete this permission.'), 'error')
+  } finally {
+    deletingPermissionId.value = null
   }
 }
 
@@ -185,13 +207,13 @@ onMounted(loadData)
         <v-window v-model="tab"><v-window-item value="users"><div class="pa-5 d-flex justify-end"><v-btn color="primary" prepend-icon="mdi-account-plus-outline" rounded="lg" @click="openNewUser">Add user</v-btn></div>
           <v-table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th class="text-right">Actions</th></tr></thead><tbody>
             <tr v-for="user in users" :key="user.id"><td class="font-weight-medium">{{ user.name }}</td><td>{{ user.email }}</td><td><v-chip size="small" variant="tonal">{{ user.role?.name ?? 'Unassigned' }}</v-chip></td>
-              <td><v-chip size="small" :color="user.is_active ? 'success' : 'default'" variant="tonal">{{ user.is_active ? 'Active' : 'Inactive' }}</v-chip></td><td class="text-right"><v-btn size="small" icon="mdi-pencil-outline" variant="text" aria-label="Edit user" @click="editUser(user)" /><v-btn size="small" variant="text" :disabled="user.id === auth.user?.id" @click="toggleUser(user)">{{ user.is_active ? 'Deactivate' : 'Activate' }}</v-btn></td></tr>
+              <td><v-chip size="small" :color="user.is_active ? 'success' : 'default'" variant="tonal">{{ user.is_active ? 'Active' : 'Inactive' }}</v-chip></td><td class="text-right"><v-btn size="small" icon="mdi-pencil-outline" variant="text" aria-label="Edit user" @click="editUser(user)" /><v-btn size="small" variant="text" :loading="togglingUserId === user.id" :disabled="user.id === auth.user?.id || togglingUserId !== null" @click="toggleUser(user)">{{ user.is_active ? 'Deactivate' : 'Activate' }}</v-btn></td></tr>
           </tbody></v-table></v-window-item>
           <v-window-item value="roles"><div class="pa-5 d-flex justify-end"><v-btn color="primary" prepend-icon="mdi-shield-plus-outline" rounded="lg" @click="openNewRole">Create role</v-btn></div>
-            <v-list lines="two"><v-list-item v-for="role in roles" :key="role.id" :title="role.name" :subtitle="`${role.slug} · ${role.permissions.length} permissions`"><template #append><v-btn icon="mdi-pencil-outline" variant="text" aria-label="Edit role" @click="editRole(role)" /><v-btn icon="mdi-delete-outline" variant="text" aria-label="Delete role" @click="removeRole(role)" /></template></v-list-item></v-list>
+            <v-list lines="two"><v-list-item v-for="role in roles" :key="role.id" :title="role.name" :subtitle="`${role.slug} · ${role.permissions.length} permissions`"><template #append><v-btn icon="mdi-pencil-outline" variant="text" aria-label="Edit role" @click="editRole(role)" /><v-btn icon="mdi-delete-outline" variant="text" aria-label="Delete role" :loading="deletingRoleId === role.id" :disabled="deletingRoleId !== null" @click="removeRole(role)" /></template></v-list-item></v-list>
           </v-window-item>
           <v-window-item value="permissions"><div class="pa-5 d-flex justify-end"><v-btn color="primary" prepend-icon="mdi-key-plus" rounded="lg" @click="openNewPermission">Add permission</v-btn></div>
-            <v-list lines="two"><v-list-item v-for="permission in permissions" :key="permission.id" :title="permission.name" :subtitle="permission.slug"><template #append><v-btn icon="mdi-pencil-outline" variant="text" aria-label="Edit permission" @click="editPermission(permission)" /><v-btn icon="mdi-delete-outline" variant="text" aria-label="Delete permission" @click="removePermission(permission)" /></template></v-list-item></v-list>
+            <v-list lines="two"><v-list-item v-for="permission in permissions" :key="permission.id" :title="permission.name" :subtitle="permission.slug"><template #append><v-btn icon="mdi-pencil-outline" variant="text" aria-label="Edit permission" @click="editPermission(permission)" /><v-btn icon="mdi-delete-outline" variant="text" aria-label="Delete permission" :loading="deletingPermissionId === permission.id" :disabled="deletingPermissionId !== null" @click="removePermission(permission)" /></template></v-list-item></v-list>
           </v-window-item></v-window>
       </v-card>
     </main>
@@ -199,17 +221,17 @@ onMounted(loadData)
       <v-text-field v-model="newUser.name" label="Full name" variant="outlined" required /><v-text-field v-model="newUser.email" label="Email" type="email" variant="outlined" required />
       <v-select v-model="newUser.role_id" :items="roles" item-title="name" item-value="id" label="Role" variant="outlined" required />
       <template v-if="!editingUserId"><v-text-field v-model="newUser.password" label="Temporary password" type="password" variant="outlined" minlength="8" required /><v-text-field v-model="newUser.password_confirmation" label="Confirm password" type="password" variant="outlined" required /></template>
-      <div class="d-flex justify-end ga-2 mt-2"><v-btn variant="text" @click="userDialog = false">Cancel</v-btn><v-btn type="submit" color="primary" :loading="busy">Save account</v-btn></div>
+      <div class="d-flex justify-end ga-2 mt-2"><v-btn variant="text" :disabled="saving" @click="userDialog = false">Cancel</v-btn><v-btn type="submit" color="primary" :loading="saving">Save account</v-btn></div>
     </v-form></v-card-text></v-card></v-dialog>
     <v-dialog v-model="roleDialog" max-width="560"><v-card class="pa-5" rounded="xl"><v-card-title class="text-h5">{{ editingRoleId ? 'Edit role' : 'Create role' }}</v-card-title><v-card-text><v-form @submit.prevent="createRole">
       <v-text-field v-model="newRole.name" label="Role name" variant="outlined" required /><v-text-field v-model="newRole.slug" label="Role key (for example: doctor)" variant="outlined" required />
       <v-textarea v-model="newRole.description" label="Description" variant="outlined" rows="2" /><v-select v-model="newRole.permission_ids" :items="permissions" item-title="name" item-value="id" label="Permissions" variant="outlined" multiple chips />
-      <div class="d-flex justify-end ga-2 mt-2"><v-btn variant="text" @click="roleDialog = false">Cancel</v-btn><v-btn type="submit" color="primary">Save role</v-btn></div>
+      <div class="d-flex justify-end ga-2 mt-2"><v-btn variant="text" :disabled="saving" @click="roleDialog = false">Cancel</v-btn><v-btn type="submit" color="primary" :loading="saving">Save role</v-btn></div>
     </v-form></v-card-text></v-card></v-dialog>
     <v-dialog v-model="permissionDialog" max-width="560"><v-card class="pa-5" rounded="xl"><v-card-title class="text-h5">{{ editingPermissionId ? 'Edit permission' : 'Add permission' }}</v-card-title><v-card-text><v-form @submit.prevent="createPermission">
       <v-text-field v-model="newPermission.name" label="Permission name" variant="outlined" required /><v-text-field v-model="newPermission.slug" label="Permission key (for example: inventory.manage)" variant="outlined" required />
       <v-textarea v-model="newPermission.description" label="Description" variant="outlined" rows="2" />
-      <div class="d-flex justify-end ga-2 mt-2"><v-btn variant="text" @click="permissionDialog = false">Cancel</v-btn><v-btn type="submit" color="primary">Save permission</v-btn></div>
+      <div class="d-flex justify-end ga-2 mt-2"><v-btn variant="text" :disabled="saving" @click="permissionDialog = false">Cancel</v-btn><v-btn type="submit" color="primary" :loading="saving">Save permission</v-btn></div>
     </v-form></v-card-text></v-card></v-dialog>
   </div>
 </template>

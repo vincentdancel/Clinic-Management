@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { setNavigating } from '@/composables/useGlobalLoading'
 import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
@@ -25,6 +26,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
+  setNavigating(true)
   const auth = useAuthStore()
   await auth.initialize()
 
@@ -39,6 +41,14 @@ router.beforeEach(async (to) => {
 
   const permission = to.meta.permission as string | undefined
   if (permission && !auth.hasPermission(permission)) return { name: 'home' }
+})
+
+router.afterEach(() => {
+  setNavigating(false)
+})
+
+router.onError(() => {
+  setNavigating(false)
 })
 
 export default router
