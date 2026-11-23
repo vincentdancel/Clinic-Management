@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { api, prepareCsrfCookie } from '@/services/api'
+import { api, clearCsrfToken, prepareCsrfCookie } from '@/services/api'
 
 export interface Permission {
   id: number
@@ -33,7 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function login(email: string, password: string, remember: boolean): Promise<void> {
-    await prepareCsrfCookie()
+    await prepareCsrfCookie(true)
     const { data } = await api.post<{ user: AuthUser }>('/auth/login', { email, password, remember })
     user.value = data.user
     initialized.value = true
@@ -43,6 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await api.post('/auth/logout')
     } finally {
+      clearCsrfToken()
       user.value = null
       initialized.value = true
     }

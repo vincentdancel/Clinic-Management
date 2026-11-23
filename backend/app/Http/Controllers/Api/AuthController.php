@@ -15,6 +15,13 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
+    public function csrfToken(Request $request): JsonResponse
+    {
+        return response()->json([
+            'csrf_token' => $request->hasSession() ? $request->session()->token() : null,
+        ]);
+    }
+
     public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([

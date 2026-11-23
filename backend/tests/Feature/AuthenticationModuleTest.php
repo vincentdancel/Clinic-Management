@@ -131,4 +131,41 @@ class AuthenticationModuleTest extends TestCase
 
         $this->assertTrue(Hash::check('DifferentPass456!', $user->fresh()->password));
     }
+
+    public function test_stateful_frontend_can_fetch_csrf_token_for_cross_origin_requests(): void
+    {
+        $permission = Permission::create(['name' => 'Manage users', 'slug' => 'users.manage']);
+        $adminRole = Role::create(['name' => 'Administrator', 'slug' => 'administrator']);
+        $adminRole->permissions()->attach($permission);
+        $staffRole = Role::create(['name' => 'Nurse', 'slug' => 'nurse']);
+        $admin = User::factory()->create([
+            'role_id' => $adminRole->id,
+            'email' => 'admin-csrf@example.test',
+            'password' => 'StrongPass123!',
+        ]);
+
+        $csrfResponse = $this->withHeader('Origin', 'http://localhost:5173')
+            ->getJson('/api/auth/csrf-token')
+            ->assertOk();
+
+        $csrfToken = $csrfResponse->json('csrf_token');
+        $this->assertIsString($csrfToken);
+        $this->assertNotEmpty($csrfToken);
+
+        $this->withHeader('Origin', 'http://localhost:5173')
+            ->withHeader('X-CSRF-TOKEN', $csrfToken)
+            ->postJson('/api/auth/login', ['email' => $admin->email, 'password' => 'StrongPass123!'])
+            ->assertOk();
+
+        $this->withHeader('Origin', 'http://localhost:5173')
+            ->withHeader('X-CSRF-TOKEN', $csrfToken)
+            ->postJson('/api/admin/users', [
+                'name' => 'Cross Origin Nurse',
+                'email' => 'cross-origin-nurse@example.test',
+                'password' => 'StrongPass123!',
+                'password_confirmation' => 'StrongPass123!',
+                'role_id' => $staffRole->id,
+            ])
+            ->assertCreated();
+    }
 }
