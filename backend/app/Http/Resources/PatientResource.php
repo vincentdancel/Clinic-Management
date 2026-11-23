@@ -27,6 +27,13 @@ class PatientResource extends JsonResource
             'emergency_contact_name' => $this->emergency_contact_name,
             'emergency_contact_phone' => $this->emergency_contact_phone,
             'status' => $this->trashed() ? 'archived' : 'active',
+            'has_portal_account' => $this->user_id !== null,
+            'portal_account' => $this->whenLoaded('user', fn () => $this->user ? [
+                'id' => $this->user->id,
+                'name' => $this->user->name,
+                'email' => $this->user->email,
+                'is_active' => (bool) $this->user->is_active,
+            ] : null),
             'created_at' => $this->created_at?->toISOString(),
             'archived_at' => $this->deleted_at?->toISOString(),
             'allergies' => PatientAllergyResource::collection($this->whenLoaded('allergies')),

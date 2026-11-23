@@ -488,6 +488,36 @@ class ConsultationController extends Controller
         return AuditLogResource::collection($record->auditLogs()->with('user:id,name')->get());
     }
 
+    public function releaseToPatient(Request $request, string $consultation): ConsultationResource
+    {
+        $record = Consultation::query()->findOrFail($consultation);
+
+        if ($record->status !== Consultation::STATUS_COMPLETED) {
+            throw ValidationException::withMessages([
+                'status' => ['Only completed consultations can be released to the patient portal.'],
+            ]);
+        }
+
+        $oldValues = ['is_released_to_patient' => (bool) $record->is_released_to_patient];
+
+        $record->update([
+            'is_released_to_patient' => true,
+            'released_to_patient_at' => now(),
+            'released_to_patient_by' => $request->user()->id,
+        ]);
+
+        $this->auditLogs->log(
+            event: 'consultation.released_to_patient',
+            auditable: $record,
+            user: $request->user(),
+            oldValues: $oldValues,
+            newValues: ['is_released_to_patient' => true],
+            request: $request,
+        );
+
+        return new ConsultationResource($this->loadDetailRelations($record->fresh()));
+    }
+
     /**
      * @param  array<string, mixed>  $payload
      */

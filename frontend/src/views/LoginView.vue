@@ -81,6 +81,9 @@ function continueWithGoogle() {
             Continue with Google
           </v-btn>
           <p class="text-caption text-medium-emphasis mt-6 text-center">Accounts are created by your clinic administrator.</p>
+          <p class="text-caption text-center mt-2">
+            <RouterLink class="text-decoration-none text-primary font-weight-medium" to="/patient/login">Patient Portal sign in</RouterLink>
+          </p>
         </v-card>
         <p class="auth-foot text-center mt-7">Secure access for your care team</p>
       </v-col>

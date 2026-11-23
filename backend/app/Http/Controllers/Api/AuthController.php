@@ -35,6 +35,12 @@ class AuthController extends Controller
             return response()->json(['message' => 'The provided credentials are incorrect or the account is inactive.'], 422);
         }
 
+        if ($user->isPatient()) {
+            Auth::guard('web')->logout();
+
+            return response()->json(['message' => 'Please sign in through the Patient Portal.'], 403);
+        }
+
         $request->session()->regenerate();
 
         return response()->json(['user' => $user->load('role.permissions')]);

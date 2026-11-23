@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\EnsurePatientPortalAccess;
+use App\Http\Middleware\EnsureStaffUser;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\RequirePermission;
 use App\Http\Middleware\RequireRole;
@@ -22,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => EnsureUserIsActive::class,
             'role' => RequireRole::class,
             'permission' => RequirePermission::class,
+            'patient.portal' => EnsurePatientPortalAccess::class,
+            'staff' => EnsureStaffUser::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

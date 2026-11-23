@@ -27,6 +27,8 @@ class ConsultationResource extends JsonResource
             'clinical_notes' => $this->clinical_notes,
             'follow_up_date' => $this->follow_up_date?->toDateString(),
             'status' => $this->status,
+            'is_released_to_patient' => (bool) $this->is_released_to_patient,
+            'released_to_patient_at' => $this->released_to_patient_at?->toISOString(),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
             'patient' => $this->whenLoaded('patient', fn () => $this->patient ? new PatientResource($this->patient) : null),

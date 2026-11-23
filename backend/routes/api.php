@@ -7,7 +7,10 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\InvoiceController;
+use App\Http\Controllers\Api\PatientAccountController;
 use App\Http\Controllers\Api\PatientController;
+use App\Http\Controllers\Api\PatientPortalAuthController;
+use App\Http\Controllers\Api\PatientPortalController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ReportController;
@@ -47,8 +50,8 @@ Route::middleware(['auth:sanctum', 'active'])->prefix('admin')->group(function (
 });
 
 Route::middleware(['auth:sanctum', 'active'])->get('/user', [AuthController::class, 'me']);
-Route::middleware(['auth:sanctum', 'active'])->get('/dashboard', DashboardController::class);
-Route::middleware(['auth:sanctum', 'active'])->get('/search', SearchController::class);
+Route::middleware(['auth:sanctum', 'active', 'staff'])->get('/dashboard', DashboardController::class);
+Route::middleware(['auth:sanctum', 'active', 'staff'])->get('/search', SearchController::class);
 
 Route::middleware(['auth:sanctum', 'active'])->prefix('patients')->group(function (): void {
     Route::middleware('permission:patients.view')->group(function (): void {
@@ -66,6 +69,12 @@ Route::middleware(['auth:sanctum', 'active'])->prefix('patients')->group(functio
         Route::post('/{patient}/medical-history', [PatientController::class, 'storeMedicalHistory'])->whereNumber('patient');
         Route::put('/{patient}/medical-history/{history}', [PatientController::class, 'updateMedicalHistory'])->whereNumber('patient')->whereNumber('history');
         Route::delete('/{patient}/medical-history/{history}', [PatientController::class, 'destroyMedicalHistory'])->whereNumber('patient')->whereNumber('history');
+    });
+
+    Route::middleware('permission:users.manage')->group(function (): void {
+        Route::get('/{patient}/account', [PatientAccountController::class, 'show'])->whereNumber('patient');
+        Route::post('/{patient}/account', [PatientAccountController::class, 'store'])->whereNumber('patient');
+        Route::post('/{patient}/link-account', [PatientAccountController::class, 'link'])->whereNumber('patient');
     });
 });
 
@@ -127,6 +136,7 @@ Route::middleware(['auth:sanctum', 'active'])->prefix('consultations')->group(fu
         Route::post('/{consultation}/prescriptions', [ConsultationController::class, 'storePrescription'])->whereNumber('consultation');
         Route::patch('/{consultation}/prescriptions/{prescription}/status', [ConsultationController::class, 'updatePrescriptionStatus'])->whereNumber('consultation')->whereNumber('prescription');
         Route::post('/{consultation}/complete', [ConsultationController::class, 'complete'])->whereNumber('consultation');
+        Route::post('/{consultation}/release', [ConsultationController::class, 'releaseToPatient'])->whereNumber('consultation');
     });
 });
 
@@ -183,4 +193,26 @@ Route::middleware(['auth:sanctum', 'active', 'permission:reports.view'])->prefix
 Route::middleware(['auth:sanctum', 'active'])->prefix('settings')->group(function (): void {
     Route::get('/', [SettingController::class, 'index']);
     Route::put('/', [SettingController::class, 'update'])->middleware('permission:settings.manage');
+});
+
+Route::prefix('patient')->group(function (): void {
+    Route::post('/login', [PatientPortalAuthController::class, 'login'])->middleware('throttle:login');
+
+    Route::middleware(['auth:sanctum', 'active', 'patient.portal'])->group(function (): void {
+        Route::post('/logout', [PatientPortalAuthController::class, 'logout']);
+        Route::get('/me', [PatientPortalAuthController::class, 'me']);
+        Route::get('/dashboard', [PatientPortalController::class, 'dashboard']);
+        Route::get('/profile', [PatientPortalController::class, 'profile'])->middleware('permission:patient.profile.view');
+        Route::put('/profile', [PatientPortalController::class, 'updateProfile'])->middleware('permission:patient.profile.update');
+        Route::put('/password', [PatientPortalController::class, 'updatePassword'])->middleware('permission:patient.account.manage');
+        Route::get('/appointments', [PatientPortalController::class, 'appointments'])->middleware('permission:patient.appointments.view');
+        Route::post('/appointments', [PatientPortalController::class, 'requestAppointment'])->middleware('permission:patient.appointments.request');
+        Route::get('/consultations', [PatientPortalController::class, 'consultations'])->middleware('permission:patient.consultations.view');
+        Route::get('/consultations/{consultation}', [PatientPortalController::class, 'showConsultation'])->whereNumber('consultation')->middleware('permission:patient.consultations.view');
+        Route::get('/medical-records', [PatientPortalController::class, 'medicalRecords'])->middleware('permission:patient.medical_records.view');
+        Route::get('/prescriptions', [PatientPortalController::class, 'prescriptions'])->middleware('permission:patient.prescriptions.view');
+        Route::get('/invoices', [PatientPortalController::class, 'invoices'])->middleware('permission:patient.billing.view');
+        Route::get('/invoices/{invoice}', [PatientPortalController::class, 'showInvoice'])->whereNumber('invoice')->middleware('permission:patient.billing.view');
+        Route::get('/payments', [PatientPortalController::class, 'payments'])->middleware('permission:patient.billing.view');
+    });
 });

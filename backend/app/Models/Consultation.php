@@ -35,6 +35,9 @@ class Consultation extends Model
         'clinical_notes',
         'follow_up_date',
         'status',
+        'is_released_to_patient',
+        'released_to_patient_at',
+        'released_to_patient_by',
     ];
 
     protected function casts(): array
@@ -43,6 +46,8 @@ class Consultation extends Model
             'started_at' => 'datetime',
             'ended_at' => 'datetime',
             'follow_up_date' => 'date',
+            'is_released_to_patient' => 'boolean',
+            'released_to_patient_at' => 'datetime',
         ];
     }
 

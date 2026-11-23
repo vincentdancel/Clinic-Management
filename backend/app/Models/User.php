@@ -16,7 +16,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-    protected $fillable = ['role_id', 'name', 'email', 'password', 'is_active'];
+    protected $fillable = ['role_id', 'employee_id', 'patient_id', 'name', 'email', 'password', 'is_active'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -28,6 +28,16 @@ class User extends Authenticatable
     public function hasRole(string $slug): bool
     {
         return $this->role?->slug === $slug;
+    }
+
+    public function isPatient(): bool
+    {
+        return $this->hasRole('patient');
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->role !== null && ! $this->isPatient();
     }
 
     public function hasPermission(string $slug): bool

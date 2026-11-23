@@ -43,6 +43,8 @@ class DatabaseSeeder extends Seeder
             $roles[$roleSlug]->permissions()->sync(collect($permissionSlugs)->map(fn (string $slug): int => $permissions[$slug]->id)->all());
         }
 
+        $this->call(PatientRoleSeeder::class);
+
         $defaultServices = [
             ['code' => 'SRV-LAB-CBC', 'name' => 'Complete Blood Count (CBC)', 'description' => 'Standard hematology blood panel.', 'price' => 450.00, 'duration_minutes' => 15],
             ['code' => 'SRV-LAB-UA', 'name' => 'Urinalysis', 'description' => 'Routine urine examination.', 'price' => 250.00, 'duration_minutes' => 15],

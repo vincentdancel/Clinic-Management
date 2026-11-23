@@ -72,7 +72,7 @@ class PatientController extends Controller
 
     public function show(string $patient): PatientResource
     {
-        return new PatientResource(Patient::withTrashed()->with(['allergies', 'medicalHistories'])->findOrFail($patient));
+        return new PatientResource(Patient::withTrashed()->with(['allergies', 'medicalHistories', 'user:id,name,email,is_active'])->findOrFail($patient));
     }
 
     public function update(PatientUpdateRequest $request, string $patient): PatientResource

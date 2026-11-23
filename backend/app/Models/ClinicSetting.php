@@ -28,6 +28,7 @@ class ClinicSetting extends Model
             'appointment_duration_minutes' => 30,
             'working_days' => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
             'allow_walk_ins' => true,
+            'patient_appointment_requests_enabled' => false,
             'currency_code' => 'PHP',
             'tax_rate_percent' => 0.0,
             'invoice_prefix' => 'INV-',
