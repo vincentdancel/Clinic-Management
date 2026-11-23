@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\UserManagementController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,7 @@ Route::middleware(['auth:sanctum', 'active'])->prefix('admin')->group(function (
 
 Route::middleware(['auth:sanctum', 'active'])->get('/user', [AuthController::class, 'me']);
 Route::middleware(['auth:sanctum', 'active'])->get('/dashboard', DashboardController::class);
+Route::middleware(['auth:sanctum', 'active'])->get('/search', SearchController::class);
 
 Route::middleware(['auth:sanctum', 'active'])->prefix('patients')->group(function (): void {
     Route::middleware('permission:patients.view')->group(function (): void {
